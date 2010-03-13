@@ -1,0 +1,235 @@
+/******************************************************************************
+ *
+ * (C) Copyright 2007
+ *    Panda Xiong, yaxi1984@gmail.com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ *
+ * History:
+ *    2007.03.27    Panda Xiong       Create
+ *
+******************************************************************************/
+
+#include <cli_api.h>
+
+
+/******************************************************************************
+ * FUNCTION NAME:
+ *      None
+ * DESCRIPTION:
+ *      None
+ * INPUT:
+ *      None
+ * OUTPUT:
+ *      None
+ * RETURN:
+ *      None
+ * NOTES:
+ *      None
+ * HISTORY:
+ *      Ver1.00     2007.02.14      Panda Xiong         Create
+******************************************************************************/
+static CLI_REG_CMD_RETURN_E cli_cmd_ShowHelp
+(
+    IN const GT_U32     n_param,
+    IN const GT_S8     *param[]
+)
+{
+    if (n_param == 1)
+    {
+        GT_U32         cmd_count;
+        CLI_REG_CMD_S *cmd_loop;
+
+        CLI_VT_Printf("\n\rAll Available Commands :");
+
+        cmd_count = 0;
+        cmd_loop  = NULL;
+        while ((cmd_loop = CLI_REG_GetNextCommand(cmd_loop)) != NULL)
+        {
+            if (cmd_count % 4 == 0)
+            {
+                CLI_VT_Printf("\n\r");
+            }
+
+            if (cmd_loop->cmd_name != NULL)
+            {
+                CLI_VT_Printf(" %-18s", cmd_loop->cmd_name);
+                cmd_count++;
+            }
+        }
+
+        CLI_VT_Printf("\n\n\rTotal : %d", cmd_count);
+    }
+    else if (n_param == 2)
+    {
+        CLI_REG_CMD_S *p_cmd;
+        GT_S8         *p_help;
+
+        p_cmd = CLI_REG_SearchCommand(param[1]);
+        if (p_cmd == NULL)
+        {
+            CLI_VT_Printf("\n\r Unknown Command!");
+            return CLI_PRT_FAIL;
+        }
+
+        CLI_VT_Printf("\n\rCommand : %s", p_cmd->cmd_name);
+        CLI_VT_Printf("\n\rUsage   : ");
+
+        if (p_cmd->cmd_help != NULL)
+        {
+            p_help = p_cmd->cmd_help;
+
+            while (*p_help != '\0')
+            {
+                CLI_VT_Printf("%c", *p_help);
+
+                if (*p_help == VT_KEY_CR)
+                {
+                    CLI_VT_Printf("%*s", 10, " ");
+                }
+
+                p_help++;
+            }
+        }
+    }
+    else
+    {
+        CLI_VT_Printf("\n\r Unknown parameter!");
+        return CLI_PRT_FAIL;
+    }
+
+    return CLI_PRT_NONE;
+}
+
+
+/******************************************************************************
+ * FUNCTION NAME:
+ *      None
+ * DESCRIPTION:
+ *      clear screen
+ * INPUT:
+ *      None
+ * OUTPUT:
+ *      None
+ * RETURN:
+ *      None
+ * NOTES:
+ *      None
+ * HISTORY:
+ *      Ver1.00     2007.02.14      Panda Xiong         Create
+******************************************************************************/
+static CLI_REG_CMD_RETURN_E cli_cmd_ClearScreen
+(
+    IN const GT_U32     n_param,
+    IN const GT_S8     *param[]
+)
+{
+    if (n_param != 1)
+    {
+        CLI_VT_Printf("\n\r Unknown parameter!");
+        return CLI_PRT_FAIL;
+    }
+
+    CLI_VT_ClearScreen();
+
+    return CLI_PRT_INVALID;
+}
+
+
+/******************************************************************************
+ * FUNCTION NAME:
+ *      None
+ * DESCRIPTION:
+ *      None
+ * INPUT:
+ *      None
+ * OUTPUT:
+ *      None
+ * RETURN:
+ *      None
+ * NOTES:
+ *      None
+ * HISTORY:
+ *      Ver1.00     2007.02.14      Panda Xiong         Create
+******************************************************************************/
+static CLI_REG_CMD_RETURN_E cli_cmd_ShowHistory
+(
+    IN const GT_U32     n_param,
+    IN const GT_S8     *param[]
+)
+{
+    GT_S8 *history;
+
+    if (n_param != 1)
+    {
+        CLI_VT_Printf("\n\r Unknown parameter!");
+        return CLI_PRT_FAIL;
+    }
+
+    CLI_HISTORY_ResetCurrentPtr();
+
+    CLI_VT_Printf("\n\rCommand History:");
+    while ((history = CLI_HISTORY_GetPrevHistory()) != NULL)
+    {
+        CLI_VT_Printf("\n\r %s", history);
+    }
+
+    return CLI_PRT_NONE;
+}
+
+
+static CLI_REG_CMD_S cli_sys_cmd[] =
+{
+    {"?",       cli_cmd_ShowHelp,      "? [<command>] (show help information)"},
+    {"help",    cli_cmd_ShowHelp,      "help [<command>] (show help information)"},
+    {"cls",     cli_cmd_ClearScreen,   "cls (clear screen)"},
+    {"clear",   cli_cmd_ClearScreen,   "clear (clear screen)"},
+    {"history", cli_cmd_ShowHistory,   "history (show command history)"}
+};
+
+
+/******************************************************************************
+ * FUNCTION NAME:
+ *      None
+ * DESCRIPTION:
+ *      None
+ * INPUT:
+ *      None
+ * OUTPUT:
+ *      None
+ * RETURN:
+ *      None
+ * NOTES:
+ *      None
+ * HISTORY:
+ *      Ver1.00     2007.02.14      Panda Xiong         Create
+******************************************************************************/
+GT_BOOL CLI_CMD_RegisterCmd(void)
+{
+    GT_U32  loop;
+
+    for (loop = 0; loop < sizeof(cli_sys_cmd)/sizeof(cli_sys_cmd[0]); loop++)
+    {
+        if (!CLI_REG_RegisterCmd(&cli_sys_cmd[loop]))
+        {
+            CLI_VT_Printf("\n\r%s(line%d): Register Command %s Fail!",
+                        __FILE__, __LINE__, cli_sys_cmd[loop].cmd_name);
+        }
+    }
+
+    return GT_TRUE;
+}
+

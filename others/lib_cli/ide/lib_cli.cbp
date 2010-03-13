@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="lib_cli" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="lib_cli" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Debug\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+			</Target>
+			<Target title="Release">
+				<Option output="lib_cli" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-O2" />
+			<Add option="-Wall" />
+			<Add directory="..\source\include" />
+			<Add directory="..\source\kernel" />
+			<Add directory="..\source\porting" />
+		</Compiler>
+		<Linker>
+			<Add option="-s" />
+		</Linker>
+		<Unit filename="..\source\include\base_macro.h" />
+		<Unit filename="..\source\include\typedef.h" />
+		<Unit filename="..\source\include\vt_def.h" />
+		<Unit filename="..\source\kernel\cli_api.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\source\kernel\cli_api.h" />
+		<Unit filename="..\source\kernel\cli_cmd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\source\kernel\cli_cmd.h" />
+		<Unit filename="..\source\kernel\cli_history.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\source\kernel\cli_history.h" />
+		<Unit filename="..\source\kernel\cli_io.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\source\kernel\cli_io.h" />
+		<Unit filename="..\source\kernel\cli_par.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\source\kernel\cli_par.h" />
+		<Unit filename="..\source\kernel\cli_reg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\source\kernel\cli_reg.h" />
+		<Unit filename="..\source\porting\cli_port.h" />
+		<Unit filename="..\source\porting\cli_vt.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
