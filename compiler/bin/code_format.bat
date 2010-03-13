@@ -1,0 +1,1 @@
+D:\compiler\bin\AStyle.exe --indent=spaces=4 --brackets=break --indent-switches --indent-preprocessor --break-blocks --delete-empty-lines --pad-oper --pad-paren-out --unpad-paren --convert-tabs --suffix=.~bak %1
