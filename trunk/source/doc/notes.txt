@@ -1,5 +1,0 @@
-1. for bootloader and kernel, the image will always be the last sub-directory to make,
-   to link all objects files;
-   so, to make sure it will be the last sub-directory to make, the first character of image
-   should be the last character to display, that is '~'.
-
