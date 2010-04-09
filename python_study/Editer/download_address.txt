@@ -1,0 +1,7 @@
+|-- Komodo-Edit-5.2.4-4343.msi
+|-- Pyscripterv1.9.9.7_green.7z
+|-- SPE-0.8.4.c-wx2.6.1.0-no_setup.zip
+|
++--ulipad
+    |--- python_ulipad.reg
+    +--- ulipad.4.0.py25.exe
