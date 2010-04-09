@@ -1,0 +1,22 @@
+
+安装好后，打开BOA, 选择“工具” - “选择语言”， 选择“英语”，确定关闭BOA，即可使用。
+
+
+在中文XP系统下安装的BOA Constructor v0.6.1在保存时提示“UnicodeDecodeError: 'ascii' codec can't decode byte 0xb6 in position 0: ordinal not in range(128) ”，原因是安装BOA Constructor时在桌面上创建的快捷方式中的“起始路径”为空，且其所在的路径中含有中文。
+
+ 
+
+解决方法：
+
+修改BOA Constructor时在桌面上创建的快捷方式的属性，修改“起始路径”为非中文路径。这样不论该快捷方式放在哪里都可以不会提示这样的错误。
+
+ 
+
+附：
+
+网上的如下的解决方法无效。
+通用的解决办法：
+建立文件sitecustomize.py
+import sys
+sys.setdefaultencoding(‘utf-8’) # replace with encoding you want to be the default one
+保存到你的python安装目录\Lib\site-packages\ 
