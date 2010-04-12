@@ -29,9 +29,9 @@
 
 
 /* at first, there is no registerd command;
- * it is always point to the last command.
+ * and, this is always point to the last command.
  */
-static CLI_REG_CMD_T *p_cmd_end = NULL;
+static CLI_REG_CMD_T *p_cmd_end;
 
 
 /******************************************************************************
@@ -146,7 +146,6 @@ GT_BOOL CLI_REG_RegisterCmd(IN CLI_REG_CMD_T *cmd)
 GT_BOOL CLI_REG_DeRegisterCmd(IN CLI_REG_CMD_T *cmd)
 {
     CLI_REG_CMD_T *cmd_loop;
-    CLI_REG_CMD_T *tmp_cmd;
 
     /* if the command has no command name, register fail */
     if ((cmd == NULL) || (cmd->cmd_name == NULL))
@@ -162,20 +161,32 @@ GT_BOOL CLI_REG_DeRegisterCmd(IN CLI_REG_CMD_T *cmd)
 
     for (cmd_loop=p_cmd_end; cmd_loop!=NULL; cmd_loop=cmd_loop->prev_cmd)
     {
+        /* this command has been registerd, de-register it */
         if (strcmp(cmd_loop->cmd_name, cmd->cmd_name) == 0)
         {
-            /* this command has been registerd, de-register it. */
-            if (cmd_loop->prev_cmd != NULL)
+            if (cmd_loop->prev_cmd != NULL)     /* not the head command */
             {
-                tmp_cmd            = cmd_loop->next_cmd;
-                cmd_loop           = cmd_loop->prev_cmd;
-                cmd_loop->next_cmd = tmp_cmd;
+                cmd_loop->prev_cmd->next_cmd = cmd_loop->next_cmd;
+
+                if (cmd_loop->next_cmd != NULL)
+                {
+                    /* not the tail command */
+                    cmd_loop->next_cmd->prev_cmd = cmd_loop->prev_cmd;
+                }
+                else
+                {
+                    /* the tail command */
+                    p_cmd_end = cmd_loop->prev_cmd;
+                }
             }
-            else
+            else    /* head command */
             {
-                cmd_loop           = cmd_loop->next_cmd;
-                cmd_loop->prev_cmd = NULL;
+                cmd_loop->next_cmd->prev_cmd = NULL;
             }
+
+            /* reset the de-registered command to initial status */
+            cmd_loop->prev_cmd = NULL;
+            cmd_loop->next_cmd = NULL;
 
             break;
         }
