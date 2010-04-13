@@ -46,9 +46,9 @@ typedef CLI_REG_CMD_RETURN_T (*CLI_REG_CMD_EXEC_T)
 /* register command stucture format */
 typedef struct _cli_reg_cmd_t
 {
-    SINT8                 *cmd_name;       /* command name                */
+    const SINT8           *cmd_name;       /* command name                */
     CLI_REG_CMD_EXEC_T     cmd_exec;       /* execute command function    */
-    SINT8                 *cmd_help;       /* command help                */
+    const SINT8           *cmd_help;       /* command help                */
 
     struct _cli_reg_cmd_t *prev_cmd;       /* the prev command            */
     struct _cli_reg_cmd_t *next_cmd;       /* the next command            */

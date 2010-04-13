@@ -27,7 +27,7 @@
 #define IN                      /* nothing */
 #define OUT                     /* nothing */
 
-//typedef unsigned int          BOOL;       /* Boolean: TRUE/FALSE */
+/*typedef unsigned int          BOOL;*/     /* Boolean: TRUE/FALSE */
 typedef unsigned char           UINT8;      /* 8-bit */
 typedef          char           SINT8;
 typedef unsigned short          UINT16;     /* 16-bit */

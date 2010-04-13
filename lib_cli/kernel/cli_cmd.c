@@ -50,8 +50,8 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHelp
 {
     if (n_param == 1)
     {
-        UINT32         cmd_count;
-        CLI_REG_CMD_T *cmd_loop;
+        UINT32               cmd_count;
+        const CLI_REG_CMD_T *cmd_loop;
 
         CLI_VT_Printf("\n\rAll Available Commands :");
 
@@ -75,8 +75,8 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHelp
     }
     else if (n_param == 2)
     {
-        CLI_REG_CMD_T *p_cmd;
-        SINT8         *p_help;
+        const CLI_REG_CMD_T *p_cmd;
+        const SINT8         *p_help;
 
         p_cmd = CLI_REG_SearchCommand(param[1]);
         if (p_cmd == NULL)
@@ -171,7 +171,7 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHistory
     IN const SINT8     *param[]
 )
 {
-    SINT8 *history;
+    const SINT8 *history;
 
     if (n_param != 1)
     {
@@ -223,7 +223,7 @@ BOOL CLI_CMD_RegisterCmd(void)
     {
         if (!CLI_REG_RegisterCmd(&cli_sys_cmd[loop]))
         {
-            CLI_VT_Printf("\n\r%s(line%d): Register Command %s Fail!",
+            CLI_VT_Printf("\n\r%s(line%d): Register Internal Command %s Fail!",
                         __FILE__, __LINE__, cli_sys_cmd[loop].cmd_name);
         }
     }
