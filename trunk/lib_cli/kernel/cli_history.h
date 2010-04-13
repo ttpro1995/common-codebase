@@ -61,7 +61,7 @@ BOOL CLI_HISTORY_AddHistory(IN const SINT8 *history);
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-SINT8 *CLI_HISTORY_GetNextHistory(void);
+const SINT8 *CLI_HISTORY_GetNextHistory(void);
 
 /******************************************************************************
  * FUNCTION NAME:
@@ -79,7 +79,7 @@ SINT8 *CLI_HISTORY_GetNextHistory(void);
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-SINT8 *CLI_HISTORY_GetPrevHistory(void);
+const SINT8 *CLI_HISTORY_GetPrevHistory(void);
 
 /******************************************************************************
  * FUNCTION NAME:

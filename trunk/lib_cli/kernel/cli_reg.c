@@ -211,9 +211,9 @@ BOOL CLI_REG_DeRegisterCmd(IN CLI_REG_CMD_T *cmd)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const SINT8 *cmd)
+const CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const SINT8 *cmd)
 {
-    CLI_REG_CMD_T *cmd_loop;
+    const CLI_REG_CMD_T *cmd_loop;
 
 	if (cmd == NULL)
 	{
@@ -250,7 +250,7 @@ CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const SINT8 *cmd)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-CLI_REG_CMD_T *CLI_REG_GetNextCommand(IN const CLI_REG_CMD_T *cmd)
+const CLI_REG_CMD_T *CLI_REG_GetNextCommand(IN const CLI_REG_CMD_T *cmd)
 {
     CLI_REG_CMD_T *cmd_loop;
 
@@ -289,7 +289,7 @@ CLI_REG_CMD_T *CLI_REG_GetNextCommand(IN const CLI_REG_CMD_T *cmd)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-CLI_REG_CMD_T *CLI_REG_GetPrevCommand(IN const CLI_REG_CMD_T *cmd)
+const CLI_REG_CMD_T *CLI_REG_GetPrevCommand(IN const CLI_REG_CMD_T *cmd)
 {
     if (cmd == NULL)
     {
@@ -320,14 +320,14 @@ CLI_REG_CMD_T *CLI_REG_GetPrevCommand(IN const CLI_REG_CMD_T *cmd)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
+const CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
 (
     IN const CLI_REG_CMD_T *cmd,
     IN const SINT8         *match_str
 )
 {
-    CLI_REG_CMD_T *cmd_loop;
-    UINT32         match_cmd_len;
+    const CLI_REG_CMD_T *cmd_loop;
+    UINT32               match_cmd_len;
 
     if (match_str == NULL)
     {
@@ -335,7 +335,7 @@ CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
     }
 
     match_cmd_len = strlen(match_str);
-    cmd_loop      = (CLI_REG_CMD_T *)cmd;
+    cmd_loop      = cmd;
 
     if (cmd_loop == NULL)
     {
@@ -385,12 +385,12 @@ UINT32 CLI_REG_GetMatchCommandInfo
     OUT      UINT8  *least_matched_str
 )
 {
-    CLI_REG_CMD_T *cmd_loop;
-    UINT32         count;
+    const CLI_REG_CMD_T *cmd_loop;
+    UINT32               count;
 
-    CLI_REG_CMD_T *last_matched_cmd;
-    UINT32         least_matched_len;
-    UINT32         loop;
+    const CLI_REG_CMD_T *last_matched_cmd;
+    UINT32               least_matched_len;
+    UINT32               loop;
 
     if ((match_str == NULL) || (least_matched_str == NULL))
     {

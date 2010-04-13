@@ -66,10 +66,10 @@ static BOOL _cli_io_GetCmd
    IN  UINT32   buf_len
 )
 {
-	SINT32          key_value;
-    CLI_REG_CMD_T  *p_match_cmd;
-	SINT8          *p_history;
-	SINT8		   *p_cmd_buf_loop;
+	SINT32                key_value;
+    const CLI_REG_CMD_T  *p_match_cmd;
+	const SINT8          *p_history;
+	SINT8		         *p_cmd_buf_loop;
 
     /* insert mode or not, default set to insert mode.
      *    = TRUE  : insert mode;
@@ -372,7 +372,7 @@ static BOOL _cli_io_GetCmd
 static void _cli_io_DynamicDisplay
 (
     IN       SINT8          *p_cmd_buf,
-    IN       CLI_REG_CMD_T  *p_cmd,
+    IN const CLI_REG_CMD_T  *p_cmd,
     IN const SINT8         **p_command_params,
     IN       UINT32          n_param,
     IN       UINT32          n_exec_times     /* if =0, means dynamic display forever */
@@ -455,14 +455,10 @@ static void _cli_io_DynamicDisplay
         }
 
         /* after exit the dynamic display, we should empty the status line */
-        {
-            UINT8   x, y;
-
-            CLI_VT_GetCursorPosition(&x, &y);
-            CLI_VT_SetCursorToXY(0, y);
-            CLI_VT_Printf("%*s", CLI_SCREEN_WIDTH, " ");
-            CLI_VT_SetCursorToXY(0, y);
-        }
+        CLI_VT_GetCursorPosition(&x, &y);
+        CLI_VT_SetCursorToXY(0, y);
+        CLI_VT_Printf("%*s", CLI_SCREEN_WIDTH, " ");
+        CLI_VT_SetCursorToXY(0, y);
     }
 	else
 	{
@@ -478,7 +474,7 @@ static void _cli_io_DynamicDisplay
 
 static void _cli_io_StaticDisplay
 (
-    IN       CLI_REG_CMD_T  *p_cmd,
+    IN const CLI_REG_CMD_T  *p_cmd,
     IN const SINT8         **p_command_params,
     IN       UINT32          n_param
 )
@@ -527,16 +523,16 @@ static void _cli_io_StaticDisplay
 ******************************************************************************/
 static void cli_io_Task(void)
 {
-	UINT32		    n_param;
-	CLI_REG_CMD_T  *cmd = NULL;
+	UINT32		          n_param;
+	const CLI_REG_CMD_T  *cmd = NULL;
 
-    SINT8	        cmd_buffer[CLI_MAX_CMD_LEN+1];  /* command buffer      */
-	SINT8		    tmp_buffer[CLI_MAX_CMD_LEN+1];  /* temp command buffer */
-    SINT8	       *commandParams[CLI_MAX_PARAM];
+    SINT8   cmd_buffer[CLI_MAX_CMD_LEN+1];  /* command buffer      */
+	SINT8   tmp_buffer[CLI_MAX_CMD_LEN+1];  /* temp command buffer */
+    SINT8  *commandParams[CLI_MAX_PARAM];
 
 #if CLI_ENABLE_DYNAMIC_DISPLAY
-    BOOL            b_dynamic_display;
-    UINT32          n_dynamic_time;
+    BOOL    b_dynamic_display;
+    UINT32  n_dynamic_time;
 #endif
 
     while (1)
