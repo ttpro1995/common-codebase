@@ -74,6 +74,33 @@ while True:
                 console.clrscr()
                 sys.stdout.write(config.cli_prompt + '>' + ''.join(v_cmd_buf).strip())
 
+            # TAB, to auto-complete the input command
+            elif v_key == '\x09':
+                v_cmd = ''.join(v_cmd_buf).strip()
+                v_tmp_list = []
+                for v_path in config.cmd_search_path:
+                    for v_cmd_file in os.listdir(os.getcwd() + v_path):
+                        if (v_cmd_file[:len(config.cmd_file_prefix)] == config.cmd_file_prefix)  \
+                                and (v_cmd_file[-3:] == '.py')                                   \
+                                and v_cmd in v_cmd_file[len(config.cmd_file_prefix):-3]:
+                            v_tmp_list.append(v_cmd_file[len(config.cmd_file_prefix):-3])
+
+                if len(v_tmp_list) == 1:
+                    for i in range(len(v_cmd_buf)):
+                        sys.stdout.write('\b \b')
+                    v_cmd_buf = list(v_tmp_list[0])
+                    print v_tmp_list[0],
+                elif len(v_tmp_list) == 0:
+                    pass
+                else:
+                    for i in range(len(v_tmp_list)):
+                        if i % 4 == 0:
+                            print
+                            print ' ',
+                        print '%-17s' % v_tmp_list[i],
+                    print
+                    sys.stdout.write(config.cli_prompt + '>' + ''.join(v_cmd_buf).strip())
+
             # other un-supported un-printable character, do nothing
             else:
                 pass
