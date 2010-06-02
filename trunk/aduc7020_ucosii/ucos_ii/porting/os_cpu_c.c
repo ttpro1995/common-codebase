@@ -82,8 +82,6 @@ OS_STK *OSTaskStkInit(void (*task)(void *pd), void *pdata, OS_STK *ptos, INT16U 
 }
 
 
-#if OS_CPU_HOOKS_EN
-
 void OSTaskCreateHook (OS_TCB *ptcb)
 {
     ptcb = ptcb;                       /* Prevent compiler warning                                     */
@@ -119,6 +117,4 @@ void OSInitHookEnd(void)
 
 void OSTaskIdleHook(void)
 {}
-
-#endif
 
