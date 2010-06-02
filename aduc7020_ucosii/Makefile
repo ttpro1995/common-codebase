@@ -37,4 +37,5 @@ $(PROJECT_NAME).elf : $(ALL_OBJS)
 	objdump -h -S $@ > $(PROJECT_NAME).lss
 	nm -n -S $@ > $(PROJECT_NAME).sym
 	objcopy -O binary $@ $(PROJECT_NAME).bin
+	@size -A -x $@
 

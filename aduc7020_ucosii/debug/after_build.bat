@@ -2,3 +2,5 @@
 objdump -h -S %1.elf > %1.lss
 nm -n -S %1.elf > %1.sym
 objcopy -O binary %1.elf %1.bin
+size -A -x %1.elf
+
