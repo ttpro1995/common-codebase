@@ -1,0 +1,61 @@
+### uVision2 Project, (C) Keil Software
+### Do not modify !
+
+ cExt (*.c;*.S)
+ aExt (*.src;*.a*)
+ oExt (*.obj)
+ lExt (*.lib)
+ tExt (*.txt; *.h; *.inc)
+ pExt (*.plm)
+ CppX (*.cpp)
+ DaveTm { 0,0,0,0,0,0,0,0 }
+
+Target (aduc7020_ucosii), 0x0003 // Tools: 'ARM-GNU'
+GRPOPT 1,(startup),1,0,0
+GRPOPT 2,(ucos_ii_porting),1,0,0
+GRPOPT 3,(ucos_ii_source),1,0,0
+
+OPTFFF 1,1,1,0,0,0,0,0,<..\startup\main.c><main.c> 
+OPTFFF 1,2,1,0,0,0,0,0,<..\startup\startup.S><startup.S> 
+OPTFFF 2,3,1,0,0,0,0,0,<..\ucos_ii\porting\os_cpu_a.S><os_cpu_a.S> 
+OPTFFF 2,4,1,0,0,0,0,0,<..\ucos_ii\porting\os_cpu_c.c><os_cpu_c.c> 
+OPTFFF 3,5,1,0,0,0,0,0,<..\ucos_ii\source\ucos_ii.c><ucos_ii.c> 
+
+
+TARGOPT 1, (aduc7020_ucosii)
+ ARMCLK=41780000
+  OPTTT 1,1,1,0
+  OPTHX 1,65535,0,0,0
+  OPTLX 120,65,8,<.\lst\>
+  OPTOX 16
+  OPTLT 1,1,1,0,1,1,0,1,0,0,0,0
+  OPTXL 1,1,1,1,1,1,1,0,0
+  OPTFL 1,0,1
+  OPTAX 0
+  OPTBL 0,(Data Sheet)<DATASHTS\ADI\ADUC702X_DS.PDF>
+  OPTDL (SARM.DLL)(-cADuC70)(DARMAD.DLL)(-pADuC7020)(SARM.DLL)(-cADuC70)(TARMAD.DLL)(-pADuC7020)
+  OPTDBG 147453,6,()()()()()()()()()() (Segger\JLTAgdi.dll)()()()
+  OPTKEY 0,(JLTDLG)()
+  OPTKEY 0,(JLTAgdi)(-O296 -J1 -Y12000 -Z2 -FO7 -FD10000 -FC800 -FN1 -FF0ADuC702X -FS00 -FL0F800)
+  OPTKEY 0,(DLGTARM)((100=-1,-1,-1,-1,0)(127=-1,-1,-1,-1,0)(113=815,295,1247,658,0)(102=-1,-1,-1,-1,0)(103=-1,-1,-1,-1,0)(104=-1,-1,-1,-1,0)(105=-1,-1,-1,-1,0)(106=-1,-1,-1,-1,0)(117=-1,-1,-1,-1,0)(114=-1,-1,-1,-1,0)(115=-1,-1,-1,-1,0)(116=-1,-1,-1,-1,0)(128=-1,-1,-1,-1,0)(130=-1,-1,-1,-1,0)(134=-1,-1,-1,-1,0)(135=-1,-1,-1,-1,0)(129=-1,-1,-1,-1,0)(132=-1,-1,-1,-1,0)(119=-1,-1,-1,-1,0)(118=-1,-1,-1,-1,0)(121=-1,-1,-1,-1,0)(122=-1,-1,-1,-1,0)(123=-1,-1,-1,-1,0)(124=-1,-1,-1,-1,0)(126=-1,-1,-1,-1,0)(125=-1,-1,-1,-1,0)(131=-1,-1,-1,-1,0))
+  OPTKEY 0,(UL2ARM)(-U -O47 -S0 -C-1 -FO7 -FD10000 -FC800 -FN0)
+  OPTKEY 0,(DLGDARM)((100=-1,-1,-1,-1,0)(127=-1,-1,-1,-1,0)(113=762,397,1194,760,0)(102=-1,-1,-1,-1,0)(103=730,269,925,746,0)(104=-1,-1,-1,-1,0)(105=-1,-1,-1,-1,0)(106=-1,-1,-1,-1,0)(117=-1,-1,-1,-1,0)(114=-1,-1,-1,-1,0)(115=-1,-1,-1,-1,0)(116=-1,-1,-1,-1,0)(128=-1,-1,-1,-1,0)(130=-1,-1,-1,-1,0)(134=-1,-1,-1,-1,0)(135=-1,-1,-1,-1,0)(129=-1,-1,-1,-1,0)(132=-1,-1,-1,-1,0)(119=-1,-1,-1,-1,0)(118=-1,-1,-1,-1,0)(121=-1,-1,-1,-1,0)(122=-1,-1,-1,-1,0)(123=-1,-1,-1,-1,0)(124=-1,-1,-1,-1,0)(126=-1,-1,-1,-1,0)(125=-1,-1,-1,-1,0)(131=-1,-1,-1,-1,0))
+  OPTKEY 0,(ARMDBGFLAGS)(-T5F)
+  OPTKEY 0,(AGDIRDI)(-O0 -P(D:\programs\SEGGER\JLinkARM_V408h\JLinkRDI.dll) -T() -J0 -FO7 -FD10000 -FC0 -FN1 -FF0ADuC702X -FS00 -FL0F800)
+  OPTWA 0,1,(OSPrioHighRdy)
+  OPTWA 1,1,(OSTCBHighRdy)
+  OPTWA 2,1,(OSPrioCur)
+  OPTWA 3,1,(OSTCBCur)
+  OPTWA 4,1,(IRQ_SP_BOTTOM)
+  OPTWA 0,2,(OSTCBPrioTbl)
+  OPTWA 1,2,(OSPrioHighRdy)
+  OPTWA 2,2,(OSTCBFreeList)
+  OPTMM 1,2,(0x105a0)
+  OPTMM 2,2,(0x10340)
+  OPTMM 3,2,(0x113a0)
+  OPTMM 4,2,(0x110c0)
+  OPTDF 0x84
+  OPTLE <>
+  OPTLC <>
+EndOpt
+
