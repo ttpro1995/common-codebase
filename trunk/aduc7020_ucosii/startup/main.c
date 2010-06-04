@@ -44,8 +44,9 @@ static void _pre_init(void)
     IRQCLR = ~0;
     FIQCLR = ~0;
 
+    /* config P1.2/3/6/7 as GPIO output */
     GP1CON = 0x0;
-    GP1DAT = (1 << (2+24)) | (1 << (3+24)); /* config P1.2-1.3 as GPIO output */
+    GP1DAT = (1 << (2+24)) | (1 << (3+24))| (1 << (6+24))| (1 << (7+24));
 
 #if 1
     /* Timer 2 : disabled at first
@@ -70,30 +71,28 @@ static void _pre_init(void)
 }
 
 
+#define STACK_SIZE  64
+
 /* Global Variable */
-OS_STK Stack1[64];
-OS_STK Stack2[64];
+OS_STK Stack[4][STACK_SIZE];
 
 
 static void Task(void *i)
 {
-    UINT32  vPinNo = *(UINT32 *)i;
+    UINT8  vPinNo = *(UINT8 *)i;
 
     while (1)
     {
-        GP1SET = (1 << (vPinNo + 16));
-        OS_TASK_SleepMs(250 * vPinNo);
-
-        GP1CLR = (1 << (vPinNo + 16));
-        OS_TASK_SleepMs(250 * vPinNo);
+        /* reverse pin output */
+        REVERSE_BIT(GP1DAT, (vPinNo + 16));
+        OS_TASK_SleepMs(200 * vPinNo);
     }
 }
 
 
 int main(void)
 {
-    UINT32  id1 = 2;
-    UINT32  id2 = 3;
+    UINT8  id_table[4] = {2, 3, 6, 7};
 
     _pre_init();
 
@@ -101,8 +100,10 @@ int main(void)
     OSInit();
 
     /* create the tasks in uC/OS and assign decreasing priority to them */
-    OSTaskCreate(Task, &id1, &Stack1[sizeof(Stack2) - 1], 3);
-    OSTaskCreate(Task, &id2, &Stack2[sizeof(Stack2) - 1], 4);
+    OSTaskCreate(Task, &id_table[0], &Stack[0][STACK_SIZE - 1], 3);
+    OSTaskCreate(Task, &id_table[1], &Stack[1][STACK_SIZE - 1], 4);
+    OSTaskCreate(Task, &id_table[2], &Stack[2][STACK_SIZE - 1], 5);
+    OSTaskCreate(Task, &id_table[3], &Stack[3][STACK_SIZE - 1], 6);
 
     /* Enable RTOS Timer */
     T2CON |= (1 << 7);
