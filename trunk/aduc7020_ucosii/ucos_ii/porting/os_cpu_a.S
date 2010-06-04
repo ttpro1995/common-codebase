@@ -58,10 +58,8 @@ OSIntCtxSw:
     /* 2. copy context from IRQ's stack into the lower priority task's stack */
     sub     r1, sp, #(IRQ_SAVED_CONTEXT_SIZE)
 _OSIntCtxSw_loop:
-    sub     sp, sp, #4
-    sub     r0, r0, #4
-    ldr     r3, [r0]
-    str     r3, [sp]
+    ldr     r3, [r0, #-4]!
+    str     r3, [sp, #-4]!
     cmp     sp, r1
     bne     _OSIntCtxSw_loop
 
