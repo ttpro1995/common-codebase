@@ -47,5 +47,12 @@ typedef signed   long long      SINT64;
 #define NULL                    ((void *)0)
 
 
+/* bit operation */
+#define SET_BIT(n, b)       do { (n) |= (1 << (b));  } while (0)
+#define CLR_BIT(n, b)       do { (n) &= ~(1 << (b)); } while (0)
+#define READ_BIT(n, b)      ((BOOL)(((n) >> (b)) & 1))
+#define REVERSE_BIT(n, b)   do { (n) ^= (1 << (b)); } while (0)
+
+
 #endif  /* __TYPEDEF_H */
 
