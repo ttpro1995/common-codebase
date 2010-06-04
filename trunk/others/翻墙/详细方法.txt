@@ -15,3 +15,7 @@ GoogleAppProxy翻墙方法：
 12. 可以将GAppProxy注册为windows服务，这样就会自动随系统启动了，免得每次都要手动运行一次;
 
 13. 我使用的是google chrome浏览器，外加proxy switchy!插件(配置为auto-switch模式),这样就会自动使用代理了，太强大了…哈哈…
+
+
+blablabla112211
+test-aspsa-vadsce
