@@ -1,16 +1,23 @@
 /******************************************************************************
  *
- * COPYRIGHT:
- *   Copyright (c)  2005-2010   Source Photonics Inc.    All rights reserved.
+ * (C) Copyright 2007-2010
+ *   This program is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU General Public License as
+ *   published by the Free Software Foundation; either version 2 of
+ *   the License, or (at your option) any later version.
  *
- *   This is unpublished proprietary source code of Source Photonics Inc.
- *   The copyright notice above does not evidence any actual or intended
- *   publication of such source code.
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ *   MA 02111-1307 USA
  *
  * FILE NAME:
  *   isp.c
- * NODULE NAME:
- *   N/A
  * DESCRIPTION:
  *   This file provide all ISP API, for programming AVR usage.
  * HISTORY:
