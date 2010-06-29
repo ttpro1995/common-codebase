@@ -23,7 +23,17 @@
 #include <drv_i2c_lpt.h>
 
 
-#if 1
+#ifndef USE_INPOUT32_DLL
+
+extern short Inp32(short portaddr);
+extern void Out32(short portaddr, short datum);
+extern int Opendriver(void);
+extern void Closedriver(void);
+
+#define inp32   Inp32
+#define oup32   Out32
+
+#else
 
 #define LIB_INPOUT32_DLL_NAME   "inpout32.dll"
 
@@ -65,6 +75,7 @@ typedef struct
 static GT_U8    vLptOutRegVal;
 
 
+#ifdef USE_INPOUT32_DLL
 static GT_BOOL _load_dll(void)
 {
     static GT_BOOL b_init = GT_FALSE;
@@ -100,6 +111,7 @@ static GT_BOOL _load_dll(void)
 
     return GT_TRUE;
 }
+#endif
 
 
 /******************************************************************************
@@ -118,7 +130,12 @@ static GT_BOOL _load_dll(void)
  *****************************************************************************/
 static GT_BOOL _OpenDevice(void)
 {
+#ifndef USE_INPOUT32_DLL
+    Opendriver();
+    return TRUE;
+#else
     return _load_dll();
+#endif
 }
 
 
@@ -138,7 +155,12 @@ static GT_BOOL _OpenDevice(void)
  *****************************************************************************/
 static GT_BOOL _CloseDevice(void)
 {
+#ifndef USE_INPOUT32_DLL
+    Closedriver();
+    return TRUE;
+#else
     return GT_TRUE;
+#endif
 }
 
 

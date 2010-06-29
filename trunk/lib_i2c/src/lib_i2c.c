@@ -26,7 +26,7 @@
 #include <lib_i2c.h>
 
 
-#define DLL_MAJOR_VER       0x02
+#define DLL_MAJOR_VER       0x03
 #define DLL_MINOR_VER       0x00
 #define DLL_DEV_VER         0x00
 #define DLL_BUILD_VER       0x00
