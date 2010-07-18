@@ -6,7 +6,7 @@ import datetime
 
 
 version = '0.01'
-log_file_name = r'~test.log'
+log_file_name = r'~.log'
 
 # append log with LF
 def append_line(s):
@@ -17,7 +17,7 @@ def append_line(s):
     log_file.close()
 
 # test procedure
-def auto_test():
+def __auto_test():
     print ' Auto Testing ....',
     append_line('-------------------------------------')
     append_line('test start ... ')
@@ -25,11 +25,11 @@ def auto_test():
     time.sleep(1)
     append_line('  delayed 1s after previous line')
     time.sleep(0.5)
-    append_line("  delayed 0.5s after previous line")
+    append_line('  delayed 0.5s after previous line')
     append_line('test end.')
     append_line('-------------------------------------')
     raw_input(' Done. Press "Enter" key to exit ...')
 
 
 if __name__ == '__main__':
-    auto_test()
+    __auto_test()

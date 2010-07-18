@@ -1,5 +1,5 @@
 
-logfile = r'~test.log'
+logfile = r'~.log'
 
 def initlog():
     import logging
