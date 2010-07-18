@@ -1,3 +1,6 @@
+r'''
+    CLI Kernel (yaxi1984@gmail.com)
+'''
 
 import os,sys
 import WConio as console
@@ -10,8 +13,9 @@ v_cmd_history_current = 0
 for v_path in config.cmd_search_path:
     sys.path.append(os.getcwd() + v_path)
 
-console.settitle(config.cli_prompt)
+console.settitle(config.cli_prompt + ' ' + config.cli_version)
 while True:
+    b_restart = False
     sys.stdout.write(config.cli_prompt + '>')
     v_cmd_buf = []
     while True:
@@ -25,13 +29,13 @@ while True:
         else:
             # move cursor left
             if v_key == 'left':
-                if len(v_cmd_buf) > 0:
-                    sys.stdout.write('\b')
+                # do nothing
+                pass
 
             # move cursor right
             elif v_key == 'right':
-                if len(v_cmd_buf) > 0:
-                    sys.stdout.write('\b')
+                # do nothing
+                pass
 
             # move cursor up
             elif v_key == 'up':
@@ -107,23 +111,33 @@ while True:
 
         # if input 'Enter', means a new command is input,
         # quit this loop to deal the command.
-        if (v_key == '\r') or (v_key == '\n'):  # enter
+        if (v_key == '\r') or (v_key == '\n'):  # Enter
             sys.stdout.write(os.linesep)
 
             # join command buffer to command string, and remove redundant space.
             v_cmd = ''.join(v_cmd_buf).strip()
+
             if v_cmd != '':
                 # record this command into command history buffer.
                 v_cmd_history.append(v_cmd)
                 v_cmd_history_current = len(v_cmd_history)
-
-                # break this loop, to deal the command.
-                break
             else:
-                sys.stdout.write(config.cli_prompt + '>')
+                b_restart = True
+
+            # break this loop, to deal the command.
+            break
+
+    if b_restart:
+        continue
 
     # parse command
-    v_cmd_list = v_cmd.split(' ')
+    v_tmp_cmd_list = v_cmd.split(' ')
+    v_cmd_list = []
+    for i in v_tmp_cmd_list:
+        if i == '':
+            # skip redundant spaces
+            continue
+        v_cmd_list.append(i)
 
     # remap command
     if v_cmd_list[0] in config.cmd_remap_table:
