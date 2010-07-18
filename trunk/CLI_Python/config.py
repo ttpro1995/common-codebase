@@ -2,6 +2,8 @@ r'''
   Configuration file for CLI.
 '''
 
+cli_version = 'V1.00'
+
 # define all command search path here.
 cmd_search_path = ['\\system_cmd', '\\user_cmd']
 
