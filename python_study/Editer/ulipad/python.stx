@@ -1,0 +1,31 @@
+[common]
+extension = u"*.py;*.pyw"
+previewcode = "#Comment Blocks!\\nclass MyClass(MyParent):\\n    \"\"\" Class example \"\"\"\\n    def __init__(self):\\n        ''' Triple quotes '''\\n        # Do something silly\\n        a = ('Py' + \"thon\") * 100\\n        b = 'EOL unclosed string\\n        c = [Matched braces]\\n        d = {Unmatched brace"
+
+[keywords]
+keywords = "and as assert break class continue def del elif else except exec finally for from global if import in is lambda not or pass print raise return try while with yield self None True False as",
+
+[styleitems]
+controlchar = u"fore:#000000"
+p_default = 
+number = u"fore:#81BFFE"
+classname = u"bold,fore:#80FF00,back:#808080"
+triple = u"fore:#9F9F9F"
+operator = u"bold,fore:#FFFFFF"
+defname = u"bold,fore:#3CFC03"
+stringeol = u"fore:#000000,back:#E0C0E0,eol"
+character = u"fore:#FF8000"
+-selback = u"back:#0080FF"
+bracebad = u"bold,fore:#E995F4"
+string = u"fore:#FBA557"
+bracelight = u"bold,fore:#F50A6D"
+tripledouble = u"fore:#9F9F9F"
+commentline = u"fore:#9F9F9F"
+commentblock = u"fore:#238E23,back:#E8FFE8"
+-caretback = u"back:#555555"
+keyword = u"bold,fore:#FFFF84"
+default = u"back:#454545,face:Courier New,size:9"
+-caretfore = u"fore:#00FF00"
+linenumber = u"back:#AAFFAA,face:Courier New,size:9"
+identifier = u"fore:#FFFFFF"
+
