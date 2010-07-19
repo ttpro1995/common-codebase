@@ -7,7 +7,7 @@ keywords = "and as assert break class continue def del elif else except exec fin
 
 [styleitems]
 controlchar = u"fore:#008040"
-p_default = u"fore:#000000"
+p_default = u"fore:#FFFFFF"
 number = u"fore:#FF0000"
 classname = u"bold,fore:#80FF00,back:#808080"
 triple = u"fore:#999999"
