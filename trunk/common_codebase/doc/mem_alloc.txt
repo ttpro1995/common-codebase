@@ -1,4 +1,4 @@
-CPU Crytal: 18.432MHz
+CPU Crystal: 18.432MHz
 
     --------------------------   0x0000_0000     --------------------
    |  Internal Memory Area 0  |    (1MB)                 .

@@ -1,11 +1,9 @@
 
-logfile = r'~.log'
-
 def initlog():
     import logging
 
     logger = logging.getLogger()
-    hdlr = logging.FileHandler(logfile)
+    hdlr = logging.FileHandler(r'~.log')
     formatter = logging.Formatter('%(asctime)s : [%(levelname)s] %(message)s')
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)

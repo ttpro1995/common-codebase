@@ -1,35 +1,33 @@
 
-# log API
-
 import time
 import datetime
 
 
-version = '0.01'
-log_file_name = r'~.log'
+class LOG:
+    def __init__(self, file_name):
+        self.file_name = file_name
+        self.log = file(self.file_name, 'w')
 
-# append log with LF
-def append_line(s):
-    log_file = open(log_file_name, 'a')
-    s = str(datetime.datetime.today()) + ' : ' + s
-    log_file.write(s)
-    log_file.write("\n")
-    log_file.close()
+    def record(self, msg):
+        'append log with LF'
+        s = str(datetime.datetime.today()) + ' : ' + msg + '\n'
+        self.log.write(s)
 
-# test procedure
-def __auto_test():
-    print ' Auto Testing ....',
-    append_line('-------------------------------------')
-    append_line('test start ... ')
-    append_line('  time baseline')
-    time.sleep(1)
-    append_line('  delayed 1s after previous line')
-    time.sleep(0.5)
-    append_line('  delayed 0.5s after previous line')
-    append_line('test end.')
-    append_line('-------------------------------------')
-    raw_input(' Done. Press "Enter" key to exit ...')
+    def flush(self):
+        self.log.flush()
 
 
+# auto-test scripts
 if __name__ == '__main__':
-    __auto_test()
+    log = LOG(r'~test.log')
+    print ' Auto Testing ....',
+    log.record('-------------------------------------')
+    log.record('test start ... ')
+    log.record('  time baseline')
+    time.sleep(1)
+    log.record('  delayed 1s after previous line')
+    time.sleep(0.5)
+    log.record("  delayed 0.5s after previous line")
+    log.record('test end.')
+    log.record('-------------------------------------')
+    raw_input('Done. \n Press "Enter" key to exit ...')

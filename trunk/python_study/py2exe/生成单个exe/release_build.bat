@@ -1,4 +1,9 @@
 @echo off
-path D:\compiler\python;%path%
-python setup.py main.py --console
+
+set CURRENT_DIR=%CD%
+set PYTHON_DIR=D:\compiler\python
+
+path %PYTHON_DIR%;%path%
+
+python %PYTHON_DIR%\py2exe_setup.py %CURRENT_DIR%\main.py --console
 
