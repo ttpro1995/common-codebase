@@ -23,36 +23,36 @@ class LPT:
     def __init__(self, vBaseAddr=0x378):
         'Init LPT Port, default base address: 0x378'
 
-        self.__vLptBaseAddr = vBaseAddr
+        self._vLptBaseAddr = vBaseAddr
 
         # try to load Parallel Port dll
         try:
-            self.__inpout32 = windll.LoadLibrary('inpout32.dll')
+            self._inpout32 = windll.LoadLibrary('inpout32.dll')
         except:
             self._assert('Load "inpout32.dll" fail!')
 
-        self.__vLptOut = 0xFF
+        self._vLptOut = 0xFF
 
 
     def Inp32(self):
         'Read Data from LPT Port'
 
-        return self.__inpout32.Inp32(self.__vLptBaseAddr+1)
+        return self._inpout32.Inp32(self._vLptBaseAddr+1)
 
 
     def Oup32(self, vData):
         'Write Data to LPT Port'
 
-        self.__inpout32.Out32(self.__vLptBaseAddr+0, vData)
+        self._inpout32.Out32(self._vLptBaseAddr+0, vData)
 
 
     def WriteBit(self, vBit, vData):
         'Change bit value for LPT Port'
 
         # record new output value
-        self.__vLptOut = (self.__vLptOut & ~(1 << vBit)) | (vData << vBit)
+        self._vLptOut = (self._vLptOut & ~(1 << vBit)) | (vData << vBit)
 
-        self.Oup32(self.__vLptOut)
+        self.Oup32(self._vLptOut)
 
 
     def ReadBit(self, vBit):
@@ -65,7 +65,7 @@ class LPT:
     def SetLptBaseAddr(self, vNewAddr):
         'Set New LPT Port Base Address'
 
-        self.__vLptBaseAddr = vNewAddr
+        self._vLptBaseAddr = vNewAddr
 
 
 
