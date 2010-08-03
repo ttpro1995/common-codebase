@@ -47,6 +47,15 @@ FT_READ_ACK               = 0x02
 FT_MSG_SIZE               = 0x03
 
 
+class USB_PKT_T(Structure):
+    _fields_ = [
+                ('vMagic',     c_ushort),
+                ('vDir',       c_ubyte),
+                ('vClass',     c_ubyte),
+                ('vResult',    c_ubyte),
+                ('vCookieLen', c_ubyte),
+                ('aCookie',    c_ubyte * (64-6))
+               ]
 
 
 class QRIB:
@@ -70,7 +79,7 @@ class QRIB:
         self._vReadTimeoutMs  = vReadTimeoutMs
         self._vWriteTimeoutMs = vWriteTimeoutMs
 
-        self._vDevID = c_ulong(0)
+        self._pHandle = c_ulong(0)
 
 
     def IsMasterAvaliable(self):
@@ -93,18 +102,43 @@ class QRIB:
         except:
             self._assert('\nLoad "SiUSBXp.dll" fail!')
 
-        if self._qrib.SI_Open(0, addressof(self._vDevID)) == SI_SUCCESS:
-            self._qrib.SI_SetTimeouts(self._vReadTimeoutMs, self._vWriteTimeoutMs)
-            return True
-        else:
+        if self._qrib.SI_Open(0, byref(self._pHandle)) != SI_SUCCESS:
             return False
+
+        # Set read/write timeout value
+        if self._qrib.SI_SetTimeouts(self._vReadTimeoutMs, self._vWriteTimeoutMs) != SI_SUCCESS:
+            return False
+
+        # Flush read/write buffer
+        if self._qrib.SI_FlushBuffers(self._pHandle, 0, 0) != SI_SUCCESS:
+            return False
+
+        return True
 
 
     def Close(self):
         'Close I2C USB-QRIB Driver'
 
-        self._qrib.SI_Close(self._vDevID)
+        # Flush read/write buffer
+        if self._qrib.SI_FlushBuffers(self._pHandle, 0, 0) != SI_SUCCESS:
+            return False
+
+        self._qrib.SI_Close(self._pHandle)
         del self._qrib
+
+        return True
+
+
+    def Start(self):
+        'Generate I2C Start'
+
+        pass
+
+
+    def Stop(self):
+        'Generate I2C Stop'
+
+        pass
 
 
     def RandomRead(self, vI2cAddr, vOffset, vReadLen):

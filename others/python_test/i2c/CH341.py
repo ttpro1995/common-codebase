@@ -133,7 +133,7 @@ class CH341:
             self._ch341.CH341SetOutput(self._vUsbCH341ID, vEnableBit, 0, self._vPrevStatus)
 
 
-    def GetSDA(self, vData):
+    def GetSDA(self):
         'Get SDA for USB-CH341 Driver'
 
         vStatus = c_ulong(0)
@@ -144,12 +144,40 @@ class CH341:
         return (vStatus.value >> mCH341_IN_SDA_BIT) & 1
 
 
-    def GetSCL(self, vData):
+    def GetSCL(self):
         'Get SCL for USB-CH341 Driver'
 
         # currently, has no way to read the SCL line level,
         #  so, only return the OUTPUT SCL line level.
-        return (vStatus._vPrevStatus >> mCH341_OUT_SCL_BIT) & 1
+        return (self._vPrevStatus >> mCH341_OUT_SCL_BIT) & 1
+
+
+    def Start(self):
+        'Generate I2C Start'
+
+        # prepare read/write buffer
+        vLen      = c_ulong(3)
+        aWriteBuf = (c_ubyte * 3)()
+
+        aWriteBuf[0] = mCH341A_CMD_I2C_STREAM
+        aWriteBuf[1] = mCH341A_CMD_I2C_STM_STA
+        aWriteBuf[2] = mCH341A_CMD_I2C_STM_END
+
+        self._ch341.CH341WriteData(self._vUsbCH341ID, byref(aWriteBuf), addressof(vLen))
+
+
+    def Stop(self):
+        'Generate I2C Stop'
+
+        # prepare read/write buffer
+        vLen      = c_ulong(3)
+        aWriteBuf = (c_ubyte * 3)()
+
+        aWriteBuf[0] = mCH341A_CMD_I2C_STREAM
+        aWriteBuf[1] = mCH341A_CMD_I2C_STM_STO
+        aWriteBuf[2] = mCH341A_CMD_I2C_STM_END
+
+        self._ch341.CH341WriteData(self._vUsbCH341ID, byref(aWriteBuf), addressof(vLen))
 
 
     def NotifyRoutine(self, vEventStatus):

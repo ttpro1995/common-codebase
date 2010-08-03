@@ -70,8 +70,46 @@ class I2C:
             self._CurrentI2cMaster = self.vAvaliableMasterTable[vMasterName]
             self._CurrentI2cMaster.Open()
             self.i2c_host = self._CurrentI2cMaster.sName
+            return True
         else:
             self.i2c_host = '(Empty)'
+            return False
+
+
+    def GetSDA(self):
+        'Get SDA of current selected I2C Master'
+
+        return self._CurrentI2cMaster.GetSDA()
+
+
+    def GetSCL(self):
+        'Get SCL of current selected I2C Master'
+
+        return self._CurrentI2cMaster.GetSCL()
+
+
+    def SetSDA(self, vData):
+        'Set SDA of current selected I2C Master'
+
+        self._CurrentI2cMaster.SetSDA(vData)
+
+
+    def SetSCL(self, vData):
+        'Set SCL of current selected I2C Master'
+
+        self._CurrentI2cMaster.SetSCL(vData)
+
+
+    def Start(self):
+        'Generate I2C Start'
+
+        self._CurrentI2cMaster.Start()
+
+
+    def Stop(self):
+        'Generate I2C Stop'
+
+        self._CurrentI2cMaster.Stop()
 
 
     def CurrentRead(self, i2c_addr, read_len):
@@ -158,6 +196,8 @@ if __name__ == '__main__':
         else:
             print '  --> %s' % i
 
+    i2c_dll.Start()
+    i2c_dll.Stop()
 
     print '\n All I2C Slaves :'
     aI2cAddrTable = []
