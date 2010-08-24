@@ -60,7 +60,7 @@ class QRIB:
                  sName           = 'USB_QRIB',
                  vReadTimeoutMs  = 200,
                  vWriteTimeoutMs = 200,
-                 vWriteDelayTime = 0.05   # write delay time, unit of second
+                 vWriteDelayTime = 0.2   # write delay time, unit of second
                  ):
         'Init I2C USB-QRIB Driver'
 
