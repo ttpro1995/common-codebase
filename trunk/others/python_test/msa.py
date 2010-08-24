@@ -18,7 +18,7 @@ import i2c
 class _I2cSecurity:
     'define I2C Security related'
 
-    def __assert(self, message):
+    def _assert(self, message):
         print 'Error: ' + message
         sys.exit(-1)
 
@@ -47,7 +47,7 @@ class _I2cSecurity:
         if level in self.__security_table:
             return self.__security_table[level]
         else:
-            self.__assert('Invalid Security Level!')
+            self._assert('Invalid Security Level!')
 
 
     def ChangePasswd(self, level, passwd):
@@ -56,7 +56,7 @@ class _I2cSecurity:
         if level in self.__security_table:
             self.__security_table[level] = passwd
         else:
-            self.__assert('Invalid Security Level!')
+            self._assert('Invalid Security Level!')
 
 
 
@@ -74,7 +74,7 @@ class _AddrInfo:
 
 class _MemoryMap:
 
-    def __assert(self, message):
+    def _assert(self, message):
         print 'Error: ' + message
         sys.exit(-1)
 
@@ -83,7 +83,7 @@ class _MemoryMap:
 
         # check input filename
         if filename == None:
-            self.__assert('Incorrect filename!')
+            self._assert('Incorrect filename!')
 
         # record input parameter
         self.__filename     = filename
@@ -99,6 +99,9 @@ class _MemoryMap:
         # load I2C Library, set default write delay time to 200ms
         self.__i2c = i2c.I2C(0.2)
 
+        if len(self.__i2c.vAvaliableMasterTable) == 0:
+            self._assert('No Avaliable I2C Master!')
+
         # open Internal MemoryMap
         self.__open()
 
@@ -113,7 +116,7 @@ class _MemoryMap:
         # check the input address string is valid or not
         for i in range(len(s_addr)):
             if not s_addr[i] in valid_addr_string_table:
-                self.__assert('Invalid Address(1): %s' % s_addr)
+                self._assert('Invalid Address(1): %s' % s_addr)
 
         addr_info = _AddrInfo()
 
@@ -122,7 +125,7 @@ class _MemoryMap:
 
         # get memory address & page id
         if (len(ss_parse) != 2) and (len(ss_parse) != 3):
-            self.__assert('Invalid Address(2): %s' % s_addr)
+            self._assert('Invalid Address(2): %s' % s_addr)
 
         if ss_parse[0].find('[') == -1:
             # DIRECT Page
@@ -143,7 +146,7 @@ class _MemoryMap:
         else:
             # memory length is over 1 Byte
             if len(ss_parse) == 3:
-                self.__assert('Invalid Address(3): %s' % s_addr)
+                self._assert('Invalid Address(3): %s' % s_addr)
             ss_offset = ss_parse[1].split('-')
             addr_info.mem_offset = string.atoi(ss_offset[0], 16)
             addr_info.mem_len    = string.atoi(ss_offset[1], 16) - addr_info.mem_offset + 1
@@ -161,7 +164,7 @@ class _MemoryMap:
             else:
                 addr_info.mem_len = string.atoi(ss_bit[1], 16) - addr_info.mem_bit
                 if addr_info.mem_len > 8:
-                    self.__assert('Invalid Address(4): %s' % s_addr)
+                    self._assert('Invalid Address(4): %s' % s_addr)
 
         return addr_info
 
@@ -171,7 +174,7 @@ class _MemoryMap:
 
         # check this memory is recorded or not
         if row_key in self.__memtable:
-            self.__assert('Duplicate Memory definition: "%s"' % row_key)
+            self._assert('Duplicate Memory definition: "%s"' % row_key)
 
         # parse address & record this memory
         mem_info = []
@@ -198,7 +201,7 @@ class _MemoryMap:
             self.__xlBook = xlrd.open_workbook(self.__filename)
             self.__sheet = self.__xlBook.sheet_by_name('Internal Memory Map')
         except:
-            self.__assert('Open Excel File "%s" Fail!' % self.__filename)
+            self._assert('Open Excel File "%s" Fail!' % self.__filename)
 
         # launch all memory definitions
         for row in range(1, self.__sheet.nrows):
@@ -218,7 +221,7 @@ class _MemoryMap:
     def CONFIG_SET(self, mem_name, mem_value):
 
         if not mem_name in self.__memtable:
-            self.__assert('Memory "%s" is not found in MemoryMap!' % mem_name)
+            self._assert('Memory "%s" is not found in MemoryMap!' % mem_name)
 
         addr_info = self.__memtable[mem_name][0]
 
@@ -227,22 +230,22 @@ class _MemoryMap:
         if type(mem_value) == type('abcd'):         # string type
             if addr_info.mem_bit != -1:
                 # bit memory
-                self.__assert('Do not know how to write string to bit Memory "%s"!' % mem_name)
+                self._assert('Do not know how to write string to bit Memory "%s"!' % mem_name)
             if len(mem_value) != addr_info.mem_len:
-                self.__assert('The length of Memory "%s" doesnot match input string "%s"!' % (mem_name, mem_value))
+                self._assert('The length of Memory "%s" doesnot match input string "%s"!' % (mem_name, mem_value))
             for i in range(addr_info.mem_len):
                 write_buf.append(ord(mem_value[i]))
         elif type(mem_value) == type(0x12345678):   # integer type
             if addr_info.mem_bit != -1:
                 # bit memory
                 if mem_value >= 0xFF:
-                    self.__assert('A bit Memory "%s" can only be within 1 byte!' % mem_name)
+                    self._assert('A bit Memory "%s" can only be within 1 byte!' % mem_name)
                 if (mem_value & (0xFF << addr_info.mem_len)) != 0:
-                    self.__assert('Input Memory Data too long for bit Memory "%s"! %X' % mem_name)
+                    self._assert('Input Memory Data too long for bit Memory "%s"! %X' % mem_name)
             else:
                 # Byte(s) memory
                 if (mem_value >> addr_info.mem_len*8) != 0:
-                    self.__assert('Input Memory "%s" data "0x%X" length too long!' % (mem_name, mem_value))
+                    self._assert('Input Memory "%s" data "0x%X" length too long!' % (mem_name, mem_value))
             for i in range(addr_info.mem_len):
                 tmp_value = (mem_value>>((addr_info.mem_len-i-1)*8)) & 0xFF
                 write_buf.append(tmp_value)
@@ -254,19 +257,19 @@ class _MemoryMap:
                 if aBuf[0] != addr_info.mem_page_id:
                     aBuf[0] = addr_info.mem_page_id
                     if not self.__i2c.RandomWrite(addr_info.mem_addr, 0x7F, aBuf):
-                        self.__assert('Change Page ID to 0x%02X Fail!' % addr_info.mem_page_id)
+                        self._assert('Change Page ID to 0x%02X Fail!' % addr_info.mem_page_id)
             else:
-                self.__assert('Read Current Selected Page ID Fail!')
+                self._assert('Read Current Selected Page ID Fail!')
 
         # write memory
         if addr_info.mem_bit == -1:     # Byte(s) Memory
             if not self.__i2c.RandomWrite(addr_info.mem_addr, addr_info.mem_offset, write_buf):
-                self.__assert('Write Memory "%s" Fail!' % mem_name)
+                self._assert('Write Memory "%s" Fail!' % mem_name)
         else:   # bit memory
             # read byte memory, which contains this bit memory
             (vResult, aBuf) = self.__i2c.RandomRead(addr_info.mem_addr, addr_info.mem_offset, 1)
             if not vResult:
-                self.__assert('Read bit Memory "%s" Fail!' % mem_name)
+                self._assert('Read bit Memory "%s" Fail!' % mem_name)
 
             # modify memory
             vMask = (~(0xFF << addr_info.mem_len) & 0xFF) << addr_info.mem_bit  # mask for bit memory
@@ -275,14 +278,13 @@ class _MemoryMap:
 
             # write the modified memory
             if not self.__i2c.RandomWrite(addr_info.mem_addr, addr_info.mem_offset, aBuf):
-                self.__assert('Write bit Memory "%s" Fail!' % mem_name)
-
+                self._assert('Write bit Memory "%s" Fail!' % mem_name)
 
 
     def CONFIG_GET(self, mem_name):
 
         if not mem_name in self.__memtable:
-            self.__assert('Memory "%s" is not found in MemoryMap!' % mem_name)
+            self._assert('Memory "%s" is not found in MemoryMap!' % mem_name)
 
         addr_info = self.__memtable[mem_name][0]
 
@@ -293,9 +295,9 @@ class _MemoryMap:
                 if aBuf[0] != addr_info.mem_page_id:
                     aBuf[0] = addr_info.mem_page_id
                     if not self.__i2c.RandomWrite(addr_info.mem_addr, 0x7F, aBuf):
-                        self.__assert('Change Page ID to 0x%02X Fail!' % addr_info.mem_page_id)
+                        self._assert('Change Page ID to 0x%02X Fail!' % addr_info.mem_page_id)
             else:
-                self.__assert('Read Current Selected Page ID Fail!')
+                self._assert('Read Current Selected Page ID Fail!')
 
         # read memory
         if addr_info.mem_bit == -1:     # Byte(s) Memory
@@ -310,12 +312,12 @@ class _MemoryMap:
                 else:
                     return aReadBuf
             else:
-                self.__assert('Read Memory "%s" Fail!' % mem_name)
+                self._assert('Read Memory "%s" Fail!' % mem_name)
         else:   # bit memory
             # read byte memory, which contains this bit memory
             (vResult, aBuf) = self.__i2c.RandomRead(addr_info.mem_addr, addr_info.mem_offset, 1)
             if not vResult:
-                self.__assert('Read bit Memory "%s" Fail!' % mem_name)
+                self._assert('Read bit Memory "%s" Fail!' % mem_name)
 
             # get & return bit memory value
             vMask = (~(0xFF << addr_info.mem_len) & 0xFF) << addr_info.mem_bit  # mask for bit memory

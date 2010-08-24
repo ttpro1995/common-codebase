@@ -9,53 +9,42 @@
 
 from ctypes import *
 import sys
+import struct
+import time
 
 
-# Masks for the serial number and description
-SI_RETURN_SERIAL_NUMBER   = 0x00
-SI_RETURN_DESCRIPTION     = 0x01
+QRIB_MAX_LENGTH = 32  # maximum read/write length
+
+SI_SUCCESS = 0
 
 
-# Masks for return values from the device
-SI_SUCCESS                = 0x00
-SI_DEVICE_NOT_FOUND       = 0xFF
-SI_INVALID_HANDLE         = 0x01
-SI_READ_ERROR             = 0x02
-SI_RX_QUEUE_NOT_READY     = 0x03
-SI_WRITE_ERROR            = 0x04
-SI_RESET_ERROR            = 0x05
-SI_INVALID_BUFFER         = 0x06
-SI_INVALID_REQUEST_LENGTH = 0x07
-SI_DEVICE_IO_FAILED       = 0x08
+PKT_MAGIC        = 0xdeadf00d
+PKT_DIR_HOST2DEV = 0
+PKT_DIR_DEV2HOST = 1
+PKT_TYPE_I2C     = 3
+PKT_SUBTYPE_I2C_READ            = 0
+PKT_SUBTYPE_I2C_WRITE           = 1
+PKT_SUBTYPE_I2C_ADV_SETUP_WRITE = 2
+PKT_SUBTYPE_I2C_ADV_SETUP_READ  = 3
+PKT_SUBTYPE_I2C_READ_ALT        = 4
+PKT_SUBTYPE_I2C_WRITE_ALT       = 5
 
-SI_QUEUE_NO_OVERRUN       = 0x00
-SI_QUEUE_OVERRUN          = 0x01
-SI_QUEUE_READY            = 0x02
-
-SI_MAX_DEVICE_STRLEN      = 256
-SI_MAX_READ_SIZE          = 64
-SI_MAX_WRITE_SIZE         = 64
-
-INVALID_HANDLE_VALUE      = 0x1
-
-MAX_PACKET_SIZE           = 0x40
-MAX_WRITE_PKTS            = 0x08
-
-FT_READ_MSG               = 0x00
-FT_WRITE_MSG              = 0x01
-FT_READ_ACK               = 0x02
-FT_MSG_SIZE               = 0x03
+PKT_ERR_SUCCESS = 0
 
 
-class USB_PKT_T(Structure):
-    _fields_ = [
-                ('vMagic',     c_ushort),
-                ('vDir',       c_ubyte),
-                ('vClass',     c_ubyte),
-                ('vResult',    c_ubyte),
-                ('vCookieLen', c_ubyte),
-                ('aCookie',    c_ubyte * (64-6))
-               ]
+# Access Type for QRIB (Only bit[7:0] is valid)
+#  bit[7]: =1, Without Offset; =0, With Offset;
+#  bit[6]: =1, use two separate sequences for reads;
+#  bit[5]: =1, do not support I2C Slave Clock Stretching; =0, support I2C Slave Clock Stretching;
+#  bit[4]: =1, do not toggle SCL at end of transaction and short stop/start
+ACCESS_TYPE_NO_OFFSET      = (1 << 7)
+ACCESS_TYPE_NO_RD2SEQ      = (1 << 6)
+ACCESS_TYPE_NO_NOSTRETCH   = (1 << 5)
+ACCESS_TYPE_NO_NOCLRSCL    = (1 << 4)
+ACCESS_TYPE_NO_ACCESS_TYPE = 0
+
+I2C_READ  = 1
+I2C_WRITE = 0
 
 
 class QRIB:
@@ -70,7 +59,8 @@ class QRIB:
     def __init__(self,
                  sName           = 'USB_QRIB',
                  vReadTimeoutMs  = 200,
-                 vWriteTimeoutMs = 200
+                 vWriteTimeoutMs = 200,
+                 vWriteDelayTime = 0.05   # write delay time, unit of second
                  ):
         'Init I2C USB-QRIB Driver'
 
@@ -78,8 +68,11 @@ class QRIB:
 
         self._vReadTimeoutMs  = vReadTimeoutMs
         self._vWriteTimeoutMs = vWriteTimeoutMs
+        self._vWriteDelayTime = vWriteDelayTime
 
         self._pHandle = c_ulong(0)
+
+        self._vAccessType = 0
 
 
     def IsMasterAvaliable(self):
@@ -141,35 +134,193 @@ class QRIB:
         pass
 
 
+    def _create_pkt(self, bRead, vAddr, vOffset, vAccessLen, aDataBuf):
+        'create QRIB packet buffer'
+
+        # QRIB only support maximum 64 Bytes packet: Header(9B) + Data(55B)
+        aPkt  = (c_ubyte * 64)()
+
+        vLoop = 0
+        aPkt[0]  = (PKT_MAGIC >> 24) & 0xFF
+        aPkt[1]  = (PKT_MAGIC >> 16) & 0xFF
+        aPkt[2]  = (PKT_MAGIC >>  8) & 0xFF
+        aPkt[3]  = (PKT_MAGIC >>  0) & 0xFF
+        aPkt[4]  = PKT_DIR_HOST2DEV
+        aPkt[5]  = PKT_TYPE_I2C
+        aPkt[6]  = (PKT_SUBTYPE_I2C_WRITE, PKT_SUBTYPE_I2C_READ)[bRead]
+        aPkt[7]  = 4 + len(aDataBuf)
+        aPkt[8]  = 0
+        aPkt[9]  = self._vAccessType
+        aPkt[10] = vAddr
+        aPkt[11] = vOffset
+        aPkt[12] = vAccessLen
+
+        for vLoop in range(len(aDataBuf)):
+            aPkt[13+vLoop] = aDataBuf[vLoop]
+
+        return (13+len(aDataBuf), aPkt)
+
+
+    def _I2C_Write(self, vAddr, vOffset, aBuf):
+        'I2C write one or more bytes'
+
+        # send I2C Write command
+        (vPktLen, aPktBuf) = self._create_pkt(I2C_WRITE, vAddr, vOffset, len(aBuf), aBuf)
+        vWrittenLen = c_long(0)
+        if (self._qrib.SI_Write(self._pHandle, aPktBuf, vPktLen, byref(vWrittenLen), 0) != SI_SUCCESS)  \
+                or (vWrittenLen.value != vPktLen):
+            return False
+
+        # read I2C Write ACK
+        vPktLen  = 9
+        vReadLen = c_long(0)
+        if (self._qrib.SI_Read(self._pHandle, byref(aPktBuf), vPktLen, byref(vReadLen), 0) != SI_SUCCESS)  \
+                or (vReadLen.value != vPktLen) \
+                or (aPktBuf[8] != PKT_ERR_SUCCESS):
+            return False
+
+        return True
+
+
+    def _I2C_Read(self, vAddr, vOffset, vLen):
+        'I2C read one or more bytes'
+
+        # send I2C Read command
+        (vPktLen, aPktBuf) = self._create_pkt(I2C_READ, vAddr, vOffset, vLen, [])
+        vWrittenLen = c_long(0)
+        if (self._qrib.SI_Write(self._pHandle, aPktBuf, vPktLen, byref(vWrittenLen), 0) != SI_SUCCESS)  \
+                or (vWrittenLen.value != vPktLen):
+            return (False, [])
+
+        # receive I2C Read data
+        vPktLen += vLen
+        vReadLen = c_long(0)
+        if (self._qrib.SI_Read(self._pHandle, byref(aPktBuf), vPktLen, byref(vReadLen), 0) != SI_SUCCESS)  \
+                or (vReadLen.value != vPktLen) \
+                or (aPktBuf[8] != PKT_ERR_SUCCESS):
+            return (False, [])
+
+        return (True, aPktBuf[13 : 13+vLen])
+
+
+    def _I2C_Detect(self, vAddr):
+        'I2C Detect Slave'
+
+        # send I2C Write Command, without offset
+        (vPktLen, aPktBuf) = self._create_pkt(I2C_WRITE, vAddr, 0, 0, [])
+        vWrittenLen = c_long(0)
+        if (self._qrib.SI_Write(self._pHandle, aPktBuf, vPktLen, byref(vWrittenLen), 0) != SI_SUCCESS)  \
+                or (vWrittenLen.value != vPktLen):
+            return False
+
+        # read I2C Write ACK
+        vPktLen  = 9
+        vReadLen = c_long(0)
+        if (self._qrib.SI_Read(self._pHandle, byref(aPktBuf), vPktLen, byref(vReadLen), 0) != SI_SUCCESS)  \
+                or (vReadLen.value != vPktLen) \
+                or (aPktBuf[8] != PKT_ERR_SUCCESS):
+            return False
+
+        return True
+
+
+
     def RandomRead(self, vI2cAddr, vOffset, vReadLen):
         'I2C Random read one or more bytes'
 
-        return (False, [])
+        self._vAccessType = ACCESS_TYPE_NO_ACCESS_TYPE
+
+        aReadBuf = []
+        for vLoop in range(vOffset, vOffset+vReadLen, QRIB_MAX_LENGTH):
+            if (vLoop+QRIB_MAX_LENGTH) <= (vOffset+vReadLen):
+                vTmpLen = QRIB_MAX_LENGTH
+            else:
+                vTmpLen = vOffset+vReadLen - vLoop
+
+            (vResult, aTmpReadBuf) = self._I2C_Read(vI2cAddr, vLoop, vTmpLen)
+            if vResult == False:
+                return (False, [])
+            else:
+                aReadBuf += aTmpReadBuf
+
+        return (True, aReadBuf)
 
 
     def RandomWrite(self, vI2cAddr, vOffset, aBuf):
         'I2C Random write one or more bytes'
 
-        return False
+        self._vAccessType = ACCESS_TYPE_NO_ACCESS_TYPE
+
+        vWriteLen = len(aBuf)
+        for vLoop in range(vOffset, vOffset+vWriteLen, QRIB_MAX_LENGTH):
+            if (vLoop+QRIB_MAX_LENGTH) <= (vOffset+vWriteLen):
+                vTmpLen = QRIB_MAX_LENGTH
+            else:
+                vTmpLen = vOffset+vWriteLen - vLoop
+
+            vResult = self._I2C_Write(vI2cAddr, vLoop, aBuf[vLoop : vLoop+vTmpLen])
+            if vResult == False:
+                return vResult
+
+            # add this, to force delay some time, to fix bug:
+            #  when writing too long data, the target may be fail to response.
+            time.sleep(self._vWriteDelayTime)
+
+        return True
 
 
     def CurrentRead(self, vI2cAddr, vReadLen):
         'I2C Current read one or more bytes'
 
-        return (False, [])
+        self._vAccessType = ACCESS_TYPE_NO_OFFSET
+        vOffset = 0
+
+        aReadBuf = []
+        for vLoop in range(vOffset, vOffset+vReadLen, QRIB_MAX_LENGTH):
+            if (vLoop+QRIB_MAX_LENGTH) <= (vOffset+vReadLen):
+                vTmpLen = QRIB_MAX_LENGTH
+            else:
+                vTmpLen = vOffset+vReadLen - vLoop
+
+            (vResult, aTmpReadBuf) = self._I2C_Read(vI2cAddr, vLoop, vTmpLen)
+            if vResult == False:
+                return (False, [])
+            else:
+                aReadBuf += aTmpReadBuf
+
+        return (True, aReadBuf)
 
 
     def CurrentWrite(self, vI2cAddr, aBuf):
         'I2C Current write one or more bytes'
 
-        return False
+        self._vAccessType = ACCESS_TYPE_NO_OFFSET
+        vOffset = 0
+
+        vWriteLen = len(aBuf)
+        for vLoop in range(vOffset, vOffset+vWriteLen, QRIB_MAX_LENGTH):
+            if (vLoop+QRIB_MAX_LENGTH) <= (vOffset+vWriteLen):
+                vTmpLen = QRIB_MAX_LENGTH
+            else:
+                vTmpLen = vOffset+vWriteLen - vLoop
+
+            vResult = self._I2C_Write(vI2cAddr, vLoop, aBuf[vLoop : vLoop+vTmpLen])
+            if vResult == False:
+                return vResult
+
+            # add this, to force delay some time, to fix bug:
+            #  when writing too long data, the target may be fail to response.
+            time.sleep(self._vWriteDelayTime)
+
+        return True
 
 
     def Detect(self, vI2cAddr):
         'I2C Detect Slave'
 
-        return False
+        self._vAccessType = ACCESS_TYPE_NO_OFFSET
 
+        return self._I2C_Detect(vI2cAddr)
 
 
 

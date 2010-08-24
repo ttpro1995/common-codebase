@@ -14,6 +14,7 @@ import time
 import LPTB
 import LPTA
 import CH341
+import QRIB
 
 
 
@@ -29,6 +30,9 @@ class I2C:
     def __init__(self, write_delay=0.0):    # default, no write delay time
         'Init I2C Library'
 
+        # Set Write Delay Timing
+        self.i2c_write_delay_ms = write_delay
+
         self._CurrentI2cMaster = None
 
         # refresh all avaliable I2C Master
@@ -39,9 +43,6 @@ class I2C:
         if len(self.vAvaliableMasterTable) > 0:
             self.SelectMaster(self.vAvaliableMasterTable.keys()[0])
 
-        # Set Write Delay Timing
-        self.i2c_write_delay_ms = write_delay
-
 
     def RefreshMaster(self):
         'Refresh all I2C Master'
@@ -49,7 +50,8 @@ class I2C:
         # All supported I2C Master Table
         self._vAllI2cMasterTable = [LPTB.LPTB(),
                                     LPTA.LPTA(),
-                                    CH341.CH341()]
+                                    CH341.CH341(),
+                                    QRIB.QRIB(vWriteDelayTime = self.i2c_write_delay_ms)]
 
         # scan all avaliable I2C Master
         self.vAvaliableMasterTable = {}
@@ -188,6 +190,9 @@ class I2C:
 'auto-test scripts'
 if __name__ == '__main__':
     i2c_dll = I2C()
+
+    if len(i2c_dll.vAvaliableMasterTable) == 0:
+        i2c_dll._assert('No Avaliable I2C Master!')
 
     print ' All I2C Masters :'
     for i in i2c_dll.vAvaliableMasterTable.keys():
