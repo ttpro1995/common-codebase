@@ -101,6 +101,15 @@ class _MemoryMap:
 
         if len(self.__i2c.vAvaliableMasterTable) == 0:
             self._assert('No Avaliable I2C Master!')
+        else:
+            print 'All I2C Master:'
+            for i in self.GetAvaliableI2cMaster():
+                print '  -> %s' % i,
+                if i == self.GetCurrentI2cMaster():
+                    print '(Active)'
+                else:
+                    print
+            print
 
         # open Internal MemoryMap
         self.__open()
@@ -371,15 +380,6 @@ if __name__ == '__main__':
 
     map = MSA(r'1620-00100-00_InternalMemoryMap.xls', debug_enable=True)
     print '  ----  MSA Init Done        ----  '
-
-    print '\n    All I2C Master:'
-    for i in map.GetAvaliableI2cMaster():
-        print '      -> %s' % i,
-        if i == map.GetCurrentI2cMaster():
-            print '(Active)'
-        else:
-            print
-    print
 
     map.EnterSecurity(map.SECURITY_LEVEL_FACTORY)
 
