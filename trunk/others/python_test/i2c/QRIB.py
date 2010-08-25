@@ -258,7 +258,7 @@ class QRIB:
             else:
                 vTmpLen = vOffset+vWriteLen - vLoop
 
-            vResult = self._I2C_Write(vI2cAddr, vLoop, aBuf[vLoop : vLoop+vTmpLen])
+            vResult = self._I2C_Write(vI2cAddr, vLoop, aBuf[vLoop-vOffset : vLoop-vOffset+vTmpLen])
             if vResult == False:
                 return vResult
 
@@ -305,7 +305,7 @@ class QRIB:
             else:
                 vTmpLen = vOffset+vWriteLen - vLoop
 
-            vResult = self._I2C_Write(vI2cAddr, vLoop, aBuf[vLoop : vLoop+vTmpLen])
+            vResult = self._I2C_Write(vI2cAddr, vLoop, aBuf[vLoop-vOffset : vLoop-vOffset+vTmpLen])
             if vResult == False:
                 return vResult
 
