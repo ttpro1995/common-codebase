@@ -79,7 +79,7 @@ class _MemoryMap:
         sys.exit(-1)
 
 
-    def __init__(self, filename=None, debug_enable=False):
+    def __init__(self, filename, write_delay, debug_enable=False):
 
         # check input filename
         if filename == None:
@@ -96,14 +96,32 @@ class _MemoryMap:
             self.__logname = r'~memmap.log'
             self.__log     = file(self.__logname, 'w')
 
-        # load I2C Library, set default write delay time to 200ms
-        self.__i2c = i2c.I2C(0.2)
+        # load I2C Library
+        self.__i2c = i2c.I2C(write_delay)
 
         if len(self.__i2c.vAvaliableMasterTable) == 0:
             self._assert('No Avaliable I2C Master!')
 
         # open Internal MemoryMap
         self.__open()
+
+
+    def GetAvaliableI2cMaster(self):
+        'Get all Avaliable I2C Master Name'
+
+        return self.__i2c.vAvaliableMasterTable.keys()
+
+
+    def GetCurrentI2cMaster(self):
+        'Get Current I2C Master Name'
+
+        return self.__i2c._CurrentI2cMaster.sName
+
+
+    def SelectI2cMaster(self, vMasterName):
+        'Select I2C Master by name'
+
+        return self.__i2c.SelectMaster(vMasterName)
 
 
     def __parse_address(self, s_addr):
@@ -329,15 +347,20 @@ class _MemoryMap:
 class MSA(_I2cSecurity, _MemoryMap):
     'MSA Relelated'
 
-    def __init__(self, filename=None, debug_enable=False):
-        _MemoryMap.__init__(self, filename, debug_enable)     # init MemoryMap
-        _I2cSecurity.__init__(self)                           # I2C Security class
+    def __init__(self, filename=None, write_delay=0.2, debug_enable=False):
+        'Default I2C write delay is 200ms'
+        _MemoryMap.__init__(self, filename, write_delay, debug_enable) # init MemoryMap
+        _I2cSecurity.__init__(self)                                    # I2C Security class
 
 
     def EnterSecurity(self, level):
+        if self.CONFIG_GET('PWD_Entry') == level:
+            return
+
         self.CONFIG_SET('PWD_Entry', self.GetPasswd(level))
-        if self.CONFIG_GET('PWD_Entry') != level:
-            self._assert('Enter Security Level %X Fail!' % level)
+        vReadSecurity = self.CONFIG_GET('PWD_Entry')
+        if vReadSecurity != level:
+            self._assert('Enter Security Level %X Fail! Read:%X, PWD:%X' % (level, vReadSecurity, self.GetPasswd(level)))
 
 
 
@@ -346,8 +369,17 @@ class MSA(_I2cSecurity, _MemoryMap):
 if __name__ == '__main__':
     print '  ----  Start  Testing       ----  '
 
-    map = MSA(r'../1620-00100-00_InternalMemoryMap.xls', True)
-    print '  ----  Load MemoryMap Done  ----  '
+    map = MSA(r'1620-00100-00_InternalMemoryMap.xls', debug_enable=True)
+    print '  ----  MSA Init Done        ----  '
+
+    print '\n    All I2C Master:'
+    for i in map.GetAvaliableI2cMaster():
+        print '      -> %s' % i,
+        if i == map.GetCurrentI2cMaster():
+            print '(Active)'
+        else:
+            print
+    print
 
     map.EnterSecurity(map.SECURITY_LEVEL_FACTORY)
 
