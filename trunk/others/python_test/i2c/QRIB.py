@@ -262,9 +262,10 @@ class QRIB:
             if vResult == False:
                 return vResult
 
-            # add this, to force delay some time, to fix bug:
-            #  when writing too long data, the target may be fail to response.
-            time.sleep(self._vWriteDelayTime)
+            if (vLoop+vTmpLen) < (vOffset+vWriteLen):
+                # add this, to force delay some time, to fix bug:
+                #  when writing too long data, the target may be fail to response.
+                time.sleep(self._vWriteDelayTime)
 
         return True
 
@@ -308,9 +309,10 @@ class QRIB:
             if vResult == False:
                 return vResult
 
-            # add this, to force delay some time, to fix bug:
-            #  when writing too long data, the target may be fail to response.
-            time.sleep(self._vWriteDelayTime)
+            if (vLoop+vTmpLen) < (vOffset+vWriteLen):
+                # add this, to force delay some time, to fix bug:
+                #  when writing too long data, the target may be fail to response.
+                time.sleep(self._vWriteDelayTime)
 
         return True
 
