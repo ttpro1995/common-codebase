@@ -1,9 +1,26 @@
 @echo off
 
-set CURRENT_DIR=%CD%
+:: ===========================================================================
+::  These lines can be changed to fit product usage.
+:: ===========================================================================
+
+:: Define python install directory
 set PYTHON_DIR=D:\compiler\python
 
-path %PYTHON_DIR%;%path%
+:: Define python entry file name at here
+set ENTRY_FILE=main.py
 
-python %PYTHON_DIR%\py2exe_setup.py %CURRENT_DIR%\main.py --console
+:: Define generated exe file type
+::   --> console : The generated exe file with Console.
+::   --> windows : The generated exe file without Console.
+set EXE_FILE_TYPE=console
+
+
+
+:: ===========================================================================
+::  These lines are forbidden to be changed, while porting to another product.
+:: ===========================================================================
+
+path %PYTHON_DIR%;%path%
+python %PYTHON_DIR%\py2exe_setup.py %ENTRY_FILE% --%EXE_FILE_TYPE%
 
