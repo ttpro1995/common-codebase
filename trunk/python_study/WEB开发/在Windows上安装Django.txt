@@ -1,0 +1,88 @@
+在Windows上安装Django
+http://canbeatle.javaeye.com/blog/204739
+
+关键字: windows django python
+首先要准备好相关的软件： 
+Python 2.5 
+PIL for py2.5 
+Mysqldb for py2.5 
+Django 0.96 
+Apache 2.2.x 
+mod_python 3.3.1 for py2.5 
+以上软件都可以在网上下载，注意各软件对应的python版本。下载地址如下： 
+http://www.python.org 
+http://www.pythonware.com/products/pil/ 
+http://sourceforge.net/projects/mysql-python 
+http://www.djangoproject.com/ 
+http://httpd.apache.org/ 
+http://httpd.apache.org/modules/python-download.cgi 
+以上软件除了Django以外，其它的都下载exe的安装版。 
+准备工作做完之后就可以开始安装了。下面是具体的安装步骤： 
+1、安装python 
+
+这一步很简单，直接双击运行python的安装程序，按照向导一路next即可。在路经方面建议设置一个比较好找的目录，例如我就是设置为d:\python25\这个目录。这样，其它的python相关的资源就都可以组织进这个目录里面了。 
+
+2、安装PIL 
+
+PIL是Python Imaging Library缩写，主要用来处理图片用的，这里安装它是为了在Django系统中用它来对上传的图片自动的生成缩略图的。安装方法也相当的简单，直接双击运行PIL-1.1.6.win32-py2.5.exe这个文件，然后一路next即可。因为之前已经安装好了python，所以PIL的安装程序会从注册表中读取到python安装的路经，然后就自动地把PIL安装到python25\lib\site-packages\PIL下面了。 
+
+3、安装mysqldb 
+
+方法同安装PIL。 
+
+4、安装Django 
+
+可以从django的网站上下载最新的release 0.96版，解压到python目录里，例如d:\python25\django\下面。打开一个命令提示符窗口，然后进入到D:\python25\django>，输入命令python setup.py install，这个命令将会把Django安装到site-package下面并同时设置好sys.path。到此，Django基本的安装就结束了。 
+
+5、安装apache 
+
+上面安装的仅是开发环境，虽然可以运行但是却不能作为生产系统。这里我们采用apache+mod_python的组合来实现一个生产系统。安装apache也相当的简单，双击安装文件，按照向导做下去即可。 
+
+6、安装mod_python 
+
+双击安装文件，按照向导一路的next即可。在下载mod_python的时候要注意与apache版本的匹配。一切都安装完成了，接下来就是测试一下mod_python是不是能用。 
+
+7、Django 是一个框架，它有特殊的配置要求，因此一般不需要手工创建目录之类的工作， Django 提供了 django-admin.py 可以做这件事。 
+
+为了更好地使用 django-admin.py ，建议将 Python 的 Scripts 目录加入到 PATH 环境变量中去。在命令行下执行：django-admin.py startproject newtest，这样就在当前目录下创建了一个 newtest 目录，进去入可以看到有四个文件： 
+__init__.py 
+表示这是一个 Python 的包 
+manage.py 
+提供简单化的 django-admin.py 命令，特别是可以自动进行 DJANGO_SETTINGS_MODULES 和 PYTHONPATH 的处理，而没有这个命令，处理上面环境变量是件麻烦的事情 
+settings.py 
+它是django的配置文件 
+uls.py 
+url映射处理文件， Django 的url映射是url对于某个模块方法的映射，目前不能自动完成 
+
+8、进入newtest目录，执行manage.py runserver，这样就启动了webserver，一旦出现: 
+Validating models... 
+0 errors found. 
+
+Starting server on port 8000 with settings module 'newtest.settings'. 
+Go to http://127.0.0.1:8000/ for Django. 
+Quit the server with CONTROL-C (Unix) or CTRL-BREAK (Windows). 
+
+说明 Django 真的启来了。在浏览器中看一下，有一个祝贺页面，说明成功了。 
+
+9、在 newtest 目录下创建一个文件 helloworld.py 内容为: 
+Java代码 
+    from django.http import HttpResponse  
+      
+    def index(request):  
+        return HttpResponse("Hello, Django.")  
+
+
+修改urls.py，内容为: 
+Java代码 
+    from django.conf.urls.defaults import *  
+      
+    urlpatterns = patterns('',  
+        # Example:  
+        # (r'^newtest/', include('newtest.apps.foo.urls.foo')),  
+        (r'^$', 'newtest.helloworld.index'),  
+      
+        # Uncomment this for admin:  
+    #     (r'^admin/', include('django.contrib.admin.urls')),  
+    )  
+
+好了。保存了。上面的 r'^$' 是为了匹配空串，也就是形如: http://localhost:8000/ 。如果这时 web server 已经启动了，那么直接刷新页面就行了。如果显示Hello, Django.恭喜！安装成功 
