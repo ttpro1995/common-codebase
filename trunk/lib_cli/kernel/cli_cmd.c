@@ -137,6 +137,8 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ClearScreen
     IN const SINT8     *param[]
 )
 {
+    NO_WARNING(param);
+
     if (n_param != 1)
     {
         CLI_VT_Printf("\n\r Unknown parameter!");
@@ -173,6 +175,8 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHistory
 {
     const SINT8 *history;
 
+    NO_WARNING(param);
+
     if (n_param != 1)
     {
         CLI_VT_Printf("\n\r Unknown parameter!");
@@ -193,11 +197,11 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHistory
 
 static CLI_REG_CMD_T cli_sys_cmd[] =
 {
-    {"?",       cli_cmd_ShowHelp,      "? [<command>] (show help information)"},
-    {"help",    cli_cmd_ShowHelp,      "help [<command>] (show help information)"},
-    {"cls",     cli_cmd_ClearScreen,   "cls (clear screen)"},
-    {"clear",   cli_cmd_ClearScreen,   "clear (clear screen)"},
-    {"history", cli_cmd_ShowHistory,   "history (show command history)"}
+    {"?",       cli_cmd_ShowHelp,    "? [<command>] (show help information)",    NULL, NULL, },
+    {"help",    cli_cmd_ShowHelp,    "help [<command>] (show help information)", NULL, NULL, },
+    {"cls",     cli_cmd_ClearScreen, "cls (clear screen)",                       NULL, NULL, },
+    {"clear",   cli_cmd_ClearScreen, "clear (clear screen)",                     NULL, NULL, },
+    {"history", cli_cmd_ShowHistory, "history (show command history)",           NULL, NULL, }
 };
 
 
