@@ -1,6 +1,8 @@
 @echo off
 
-set COMPILER_BASE=D:\compiler
+if "%COMPILER_BASE%"=="" (
+  set COMPILER_BASE=D:\compiler
+)
 
 :: Set cross Compiler
 set CROSS_COMPILER=arm-none-eabi-
