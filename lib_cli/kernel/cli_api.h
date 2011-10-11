@@ -30,10 +30,10 @@
 #include "vt_def.h"
 
 #include "cli_porting.h"     /* cli porting header            */
+#include "cli_cmd.h"         /* cli reserved command header   */
 #include "cli_io.h"          /* cli io entry header           */
 #include "cli_reg.h"         /* cli command register header   */
 #include "cli_par.h"         /* cli command parser header     */
-#include "cli_cmd.h"         /* cli reserved command header   */
 #include "cli_history.h"     /* cli history                   */
 
 #include "cli_vt.h"          /* cli VT driver API header      */

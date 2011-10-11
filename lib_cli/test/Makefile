@@ -11,7 +11,7 @@ CLI_PORTING_FILE = cli_vt.c
 
 C_FLAGS +=  -g -O2                                                             \
 			                                                                   \
-		    -ansi -fsigned-char -funsigned-bitfields                           \
+		    -ansi -funsigned-char -funsigned-bitfields                         \
             -Wall -Wpointer-arith -Wstrict-prototypes -Winline -Wundef         \
 			-Wsign-compare -Wuninitialized                                     \
             -Wfloat-equal -Wshadow -Wbad-function-cast -Wcast-qual             \

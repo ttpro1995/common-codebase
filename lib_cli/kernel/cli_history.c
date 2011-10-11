@@ -25,25 +25,33 @@
 
 #include "cli_api.h"
 
+#if   (CLI_MAX_CMD_HISTORY < 256)
+ typedef UINT8  CLI_HISTORY_ID_T;
+#elif (CLI_MAX_CMD_HISTORY < 65536)
+ typedef UINT16 CLI_HISTORY_ID_T;
+#else
+ typedef UINT32 CLI_HISTORY_ID_T;
+#endif
 
-static SINT8 cmd_history[CLI_MAX_CMD_HISTORY][CLI_MAX_CMD_LEN+1];
+
+static UINT8 cmd_history[CLI_MAX_CMD_HISTORY][CLI_MAX_CMD_LEN+1];
 
 /* history default start from 0,
  * always point to the last empty history space.
  */
-static UINT8 n_cmd_history;
+static CLI_HISTORY_ID_T n_cmd_history;
 
 /* current history number */
-static UINT8 current_history;
+static CLI_HISTORY_ID_T current_history;
 
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_HISTORY_AppendItem
  * DESCRIPTION:
- *      None
+ *      Append CLI history item.
  * INPUT:
- *      None
+ *      CLI history item to be appended.
  * OUTPUT:
  *      None
  * RETURN:
@@ -53,11 +61,11 @@ static UINT8 current_history;
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-BOOL CLI_HISTORY_AddHistory(IN const SINT8 *history)
+void CLI_HISTORY_AppendItem(IN const UINT8 *history)
 {
     if (n_cmd_history == (CLI_MAX_CMD_HISTORY-1))
     {
-        UINT32 loop;
+        CLI_HISTORY_ID_T loop;
 
 		for (loop=0; loop<(CLI_MAX_CMD_HISTORY-2); loop++)
 		{
@@ -75,28 +83,26 @@ BOOL CLI_HISTORY_AddHistory(IN const SINT8 *history)
 
     /* reset current history */
     current_history = n_cmd_history;
-
-	return TRUE;
 }
 
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_HISTORY_GetNextItem
  * DESCRIPTION:
- *      None
+ *      Get CLI next item history.
  * INPUT:
  *      None
  * OUTPUT:
  *      None
  * RETURN:
- *      None
+ *      CLI next item history.
  * NOTES:
  *      None
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-const SINT8 *CLI_HISTORY_GetNextHistory(void)
+const UINT8 *CLI_HISTORY_GetNextItem(void)
 {
     if (current_history == n_cmd_history)
     {
@@ -111,21 +117,21 @@ const SINT8 *CLI_HISTORY_GetNextHistory(void)
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_HISTORY_GetPrevItem
  * DESCRIPTION:
- *      None
+ *      Get CLI previous item history.
  * INPUT:
  *      None
  * OUTPUT:
  *      None
  * RETURN:
- *      None
+ *      CLI previous item history.
  * NOTES:
  *      None
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-const SINT8 *CLI_HISTORY_GetPrevHistory(void)
+const UINT8 *CLI_HISTORY_GetPrevItem(void)
 {
     if (current_history == 0)
     {
@@ -140,9 +146,9 @@ const SINT8 *CLI_HISTORY_GetPrevHistory(void)
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_HISTORY_Reset
  * DESCRIPTION:
- *      None
+ *      CLI history internal reset.
  * INPUT:
  *      None
  * OUTPUT:
@@ -154,7 +160,7 @@ const SINT8 *CLI_HISTORY_GetPrevHistory(void)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-void CLI_HISTORY_ResetCurrentPtr(void)
+void CLI_HISTORY_Reset(void)
 {
     current_history = n_cmd_history;
 }
@@ -162,9 +168,9 @@ void CLI_HISTORY_ResetCurrentPtr(void)
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_HISTORY_Init
  * DESCRIPTION:
- *      None
+ *      Init CLI history.
  * INPUT:
  *      None
  * OUTPUT:
@@ -176,7 +182,7 @@ void CLI_HISTORY_ResetCurrentPtr(void)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-BOOL CLI_HISTORY_Init(void)
+void CLI_HISTORY_Init(void)
 {
 	memset(cmd_history, 0x0, sizeof(cmd_history));
 
@@ -185,7 +191,5 @@ BOOL CLI_HISTORY_Init(void)
 
 	/* default, current history is equal to n_cmd_history */
     current_history = n_cmd_history;
-
-    return TRUE;
 }
 

@@ -26,9 +26,9 @@
 #include "cli_api.h"
 
 
-static const SINT8  *_cli_prompt_str;
+static const UINT8  *_cli_prompt_str;
 
-static const SINT8  *_cmd_result_str[] =
+static const UINT8  *_cmd_result_str[] =
 {
     "",                     /* CLI_PRT_INVALID */
     "\n\r",                 /* CLI_PRT_NONE    */
@@ -62,14 +62,14 @@ static void _cli_io_MoveCursorLeft(void)
 
 static BOOL _cli_io_GetCmd
 (
-   OUT SINT8   *p_cmd_buf,
-   IN  UINT32   buf_len
+   OUT UINT8           *p_cmd_buf,
+   IN  CLI_CMD_LEN_T    buf_len
 )
 {
 	SINT32                key_value;
     const CLI_REG_CMD_T  *p_match_cmd;
-	const SINT8          *p_history;
-	SINT8		         *p_cmd_buf_loop;
+	const UINT8          *p_history;
+	UINT8		         *p_cmd_buf_loop;
 
     /* insert mode or not, default set to insert mode.
      *    = TRUE  : insert mode;
@@ -220,7 +220,7 @@ static BOOL _cli_io_GetCmd
 			}
 			else
 			{
-				SINT8 *loop;
+				UINT8 *loop;
 
 				p_cmd_buf_loop--;
                 _cli_io_MoveCursorLeft();
@@ -239,7 +239,7 @@ static BOOL _cli_io_GetCmd
 		case VT_KEY_DEL:
 			if (p_cmd_buf_loop < (p_cmd_buf + strlen(p_cmd_buf)))
 			{
-				SINT8 *loop;
+				UINT8 *loop;
 
 				CLI_VT_Printf("%s ", p_cmd_buf_loop+1);
 
@@ -271,7 +271,7 @@ static BOOL _cli_io_GetCmd
 			}
 
             /* get the prev. command history */
-            p_history = CLI_HISTORY_GetPrevHistory();
+            p_history = CLI_HISTORY_GetPrevItem();
             if (p_history == NULL)
             {
                 memset(p_cmd_buf, 0x0, buf_len);
@@ -303,7 +303,7 @@ static BOOL _cli_io_GetCmd
 			}
 
             /* get the next command history */
-            p_history = CLI_HISTORY_GetNextHistory();
+            p_history = CLI_HISTORY_GetNextItem();
             if (p_history == NULL)
             {
                 memset(p_cmd_buf, 0x0, buf_len);
@@ -340,7 +340,7 @@ static BOOL _cli_io_GetCmd
 			{
 				if (insertEnable == TRUE) /* insert mode */
 				{
-					SINT8 *loop;
+					UINT8 *loop;
 
 					CLI_VT_Printf("%c%s", (UINT8)key_value, p_cmd_buf_loop);
 
@@ -371,10 +371,10 @@ static BOOL _cli_io_GetCmd
 
 static void _cli_io_DynamicDisplay
 (
-    IN       SINT8          *p_cmd_buf,
+    IN       UINT8          *p_cmd_buf,
     IN const CLI_REG_CMD_T  *p_cmd,
-    IN const SINT8         **p_command_params,
-    IN       UINT32          n_param,
+    IN const UINT8         **p_command_params,
+    IN       CLI_CMD_PARAM_T n_param,
     IN       UINT32          n_exec_times     /* if =0, means dynamic display forever */
 )
 {
@@ -475,7 +475,7 @@ static void _cli_io_DynamicDisplay
 static void _cli_io_StaticDisplay
 (
     IN const CLI_REG_CMD_T  *p_cmd,
-    IN const SINT8         **p_command_params,
+    IN const UINT8         **p_command_params,
     IN       UINT32          n_param
 )
 {
@@ -523,19 +523,19 @@ static void _cli_io_StaticDisplay
 ******************************************************************************/
 static void cli_io_Task(void)
 {
-	UINT32		          n_param;
+	CLI_CMD_PARAM_T       n_param;
 	const CLI_REG_CMD_T  *cmd = NULL;
 
-    SINT8   cmd_buffer[CLI_MAX_CMD_LEN+1];  /* command buffer      */
-	SINT8   tmp_buffer[CLI_MAX_CMD_LEN+1];  /* temp command buffer */
-    SINT8  *commandParams[CLI_MAX_PARAM];
+    UINT8   cmd_buffer[CLI_MAX_CMD_LEN+1];  /* command buffer      */
+	UINT8   tmp_buffer[CLI_MAX_CMD_LEN+1];  /* temp command buffer */
+    UINT8  *commandParams[CLI_MAX_PARAM];
 
 #if CLI_ENABLE_DYNAMIC_DISPLAY
     BOOL    b_dynamic_display;
     UINT32  n_dynamic_time;
 #endif
 
-    while (1)
+    for (;;)
     {
         /* get command from user */
         if (!_cli_io_GetCmd(cmd_buffer, sizeof(cmd_buffer)))
@@ -592,7 +592,7 @@ static void cli_io_Task(void)
             {
                 _cli_io_DynamicDisplay(cmd_buffer,
                                        cmd,
-                                       (const SINT8 **)commandParams,
+                                       (const UINT8 **)commandParams,
                                        n_param - 1,
                                        n_dynamic_time);
             }
@@ -600,13 +600,13 @@ static void cli_io_Task(void)
 #endif
             {
                 _cli_io_StaticDisplay(cmd,
-                                      (const SINT8 **)commandParams,
+                                      (const UINT8 **)commandParams,
                                       n_param);
             }
         }
 
-    	/* add this command into history */
-        CLI_HISTORY_AddHistory(cmd_buffer);
+    	/* append this command into history buffer */
+        CLI_HISTORY_AppendItem(cmd_buffer);
     }
 
     /* never reach here */
@@ -622,22 +622,22 @@ static void cli_io_Task(void)
  * PARAMETERS:
  *      pCliPrompt : CLI Prompt string to be set.
  * RETURN:
- *      TRUE    : Success.
- *      FALSE   : Fail.
+ *      N/A
  * NOTES:
  *      N/A
  * HISTORY:
  *      2009.5.14        Panda.Xiong         Create/Update
  *****************************************************************************/
-BOOL CLI_IO_SetPrompt(IN const SINT8  *pCliPrompt)
+void CLI_IO_SetPrompt(IN const UINT8  *pCliPrompt)
 {
     if (pCliPrompt != NULL)
     {
         _cli_prompt_str = pCliPrompt;
-        return TRUE;
     }
-
-    return FALSE;
+    else
+    {
+        _cli_prompt_str = "";
+    }
 }
 
 

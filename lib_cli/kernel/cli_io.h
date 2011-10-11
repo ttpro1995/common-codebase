@@ -35,14 +35,13 @@
  * PARAMETERS:
  *      pCliPrompt : CLI Prompt string to be set.
  * RETURN:
- *      TRUE    : Success.
- *      FALSE   : Fail.
+ *      N/A
  * NOTES:
- *      The CLI Prompt string can not over 255, else, set fail.
+ *      N/A
  * HISTORY:
  *      2009.5.14        Panda.Xiong         Create/Update
  *****************************************************************************/
-BOOL CLI_IO_SetPrompt(IN const SINT8  *pCliPrompt);
+void CLI_IO_SetPrompt(IN const UINT8  *pCliPrompt);
 
 /******************************************************************************
  * FUNCTION NAME:

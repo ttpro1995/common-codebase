@@ -44,8 +44,8 @@
 ******************************************************************************/
 static CLI_REG_CMD_RETURN_T cli_cmd_ShowHelp
 (
-    IN const UINT32     n_param,
-    IN const SINT8     *param[]
+    IN const CLI_CMD_PARAM_T    n_param,
+    IN const UINT8             *param[]
 )
 {
     if (n_param == 1)
@@ -76,7 +76,7 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHelp
     else if (n_param == 2)
     {
         const CLI_REG_CMD_T *p_cmd;
-        const SINT8         *p_help;
+        const UINT8         *p_help;
 
         p_cmd = CLI_REG_SearchCommand(param[1]);
         if (p_cmd == NULL)
@@ -133,8 +133,8 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHelp
 ******************************************************************************/
 static CLI_REG_CMD_RETURN_T cli_cmd_ClearScreen
 (
-    IN const UINT32     n_param,
-    IN const SINT8     *param[]
+    IN const CLI_CMD_PARAM_T    n_param,
+    IN const UINT8             *param[]
 )
 {
     NO_WARNING(param);
@@ -169,11 +169,11 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ClearScreen
 ******************************************************************************/
 static CLI_REG_CMD_RETURN_T cli_cmd_ShowHistory
 (
-    IN const UINT32     n_param,
-    IN const SINT8     *param[]
+    IN const CLI_CMD_PARAM_T    n_param,
+    IN const UINT8             *param[]
 )
 {
-    const SINT8 *history;
+    const UINT8 *history;
 
     NO_WARNING(param);
 
@@ -183,10 +183,10 @@ static CLI_REG_CMD_RETURN_T cli_cmd_ShowHistory
         return CLI_PRT_FAIL;
     }
 
-    CLI_HISTORY_ResetCurrentPtr();
+    CLI_HISTORY_Reset();
 
     CLI_VT_Printf("\n\rCommand History:");
-    while ((history = CLI_HISTORY_GetPrevHistory()) != NULL)
+    while ((history = CLI_HISTORY_GetPrevItem()) != NULL)
     {
         CLI_VT_Printf("\n\r %s", history);
     }
@@ -219,11 +219,11 @@ static CLI_REG_CMD_T cli_sys_cmd[] =
  * HISTORY:
  *      2010.4.13        Panda.Xiong         Create/Update
  *****************************************************************************/
-BOOL CLI_CMD_RegisterCmd(void)
+void CLI_CMD_RegisterCmd(void)
 {
-    UINT32  loop;
+    UINT8  loop;
 
-    for (loop = 0; loop < sizeof(cli_sys_cmd)/sizeof(cli_sys_cmd[0]); loop++)
+    for (loop = 0; loop < COUNT_OF(cli_sys_cmd); loop++)
     {
         if (!CLI_REG_RegisterCmd(&cli_sys_cmd[loop]))
         {
@@ -231,7 +231,5 @@ BOOL CLI_CMD_RegisterCmd(void)
                         __FILE__, __LINE__, cli_sys_cmd[loop].cmd_name);
         }
     }
-
-    return TRUE;
 }
 

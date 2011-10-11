@@ -27,23 +27,38 @@
 #define __CLI_CMD_H
 
 
+#if   (CLI_MAX_CMD_LEN < 256)
+ typedef UINT8  CLI_CMD_LEN_T;
+#elif (CLI_MAX_CMD_LEN < 65536)
+ typedef UINT16 CLI_CMD_LEN_T;
+#else
+ typedef UINT32 CLI_CMD_LEN_T;
+#endif
+
+#if   (CLI_MAX_PARAM < 256)
+ typedef UINT8  CLI_CMD_PARAM_T;
+#elif (CLI_MAX_PARAM < 65536)
+ typedef UINT16 CLI_CMD_PARAM_T;
+#else
+ typedef UINT32 CLI_CMD_PARAM_T;
+#endif
+
+
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_CMD_RegisterCmd
  * DESCRIPTION:
- *      None
- * INPUT:
- *      None
- * OUTPUT:
- *      None
+ *      Register All Internal Commands.
+ * PARAMETERS:
+ *      N/A
  * RETURN:
- *      None
+ *      N/A
  * NOTES:
- *      None
+ *      N/A
  * HISTORY:
- *      Ver1.00     2007.02.14      Panda Xiong         Create
-******************************************************************************/
-BOOL CLI_CMD_RegisterCmd(void);
+ *      2010.4.13        Panda.Xiong         Create/Update
+ *****************************************************************************/
+void CLI_CMD_RegisterCmd(void);
 
 
 #endif /* __CLI_CMD_H */
