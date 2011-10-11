@@ -37,38 +37,19 @@ typedef enum
 } CLI_REG_CMD_RETURN_T;
 
 
-typedef CLI_REG_CMD_RETURN_T (*CLI_REG_CMD_EXEC_T)(IN const UINT32 n_param, IN const SINT8 *param[]);
+typedef CLI_REG_CMD_RETURN_T (*CLI_REG_CMD_EXEC_T)(IN const CLI_CMD_PARAM_T n_param, IN const UINT8 *param[]);
 
 /* register command stucture format */
 typedef struct _cli_reg_cmd_t
 {
-    const SINT8           *cmd_name;       /* command name                */
+    const UINT8           *cmd_name;       /* command name                */
     CLI_REG_CMD_EXEC_T     cmd_exec;       /* execute command function    */
-    const SINT8           *cmd_help;       /* command help                */
+    const UINT8           *cmd_help;       /* command help                */
 
     struct _cli_reg_cmd_t *prev_cmd;       /* the prev command            */
     struct _cli_reg_cmd_t *next_cmd;       /* the next command            */
 } CLI_REG_CMD_T;
 
-
-/******************************************************************************
- * FUNCTION NAME:
- *      None
- * DESCRIPTION:
- *      check this command has been registed or not.
- *      if registerd, return TRUE; else, return FALSE.
- * INPUT:
- *      None
- * OUTPUT:
- *      None
- * RETURN:
- *      None
- * NOTES:
- *      None
- * HISTORY:
- *      Ver1.00     2007.02.14      Panda Xiong         Create
-******************************************************************************/
-BOOL CLI_REG_IsCmdRegisterd(IN const CLI_REG_CMD_T *cmd);
 
 /******************************************************************************
  * FUNCTION NAME:
@@ -122,7 +103,7 @@ BOOL CLI_REG_DeRegisterCmd(IN CLI_REG_CMD_T *cmd);
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-const CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const SINT8 *cmd);
+const CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const UINT8 *cmd);
 
 /******************************************************************************
  * FUNCTION NAME:
@@ -179,7 +160,7 @@ const CLI_REG_CMD_T *CLI_REG_GetPrevCommand(IN const CLI_REG_CMD_T *cmd);
 const CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
 (
     IN const CLI_REG_CMD_T *cmd,
-    IN const SINT8         *match_str
+    IN const UINT8         *match_str
 );
 
 /******************************************************************************
@@ -200,15 +181,15 @@ const CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
 ******************************************************************************/
 UINT32 CLI_REG_GetMatchCommandInfo
 (
-    IN const SINT8  *match_str,
+    IN const UINT8  *match_str,
     OUT      UINT8  *least_matched_str
 );
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_REG_Init
  * DESCRIPTION:
- *      None
+ *      CLI Register Init.
  * INPUT:
  *      None
  * OUTPUT:
@@ -220,7 +201,7 @@ UINT32 CLI_REG_GetMatchCommandInfo
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-BOOL CLI_REG_Init(void);
+void CLI_REG_Init(void);
 
 
 #endif /* __CLI_REG_H */

@@ -35,8 +35,8 @@ static CLI_REG_CMD_T _cmd_entry[];
 
 static CLI_REG_CMD_RETURN_T cmd_entry_InternalTest
 (
-    IN const UINT32     n_param,
-    IN const SINT8     *param[]
+    IN const CLI_CMD_PARAM_T    n_param,
+    IN const UINT8             *param[]
 )
 {
     NO_WARNING(n_param || param);
@@ -57,20 +57,17 @@ static CLI_REG_CMD_T _cmd_entry[] =
 };
 
 
-static BOOL _register_command(void)
+static void _register_command(void)
 {
-    UINT32  loop;
+    UINT8  loop;
 
     for (loop = 0; loop < COUNT_OF(_cmd_entry); loop++)
     {
         if (!CLI_REG_RegisterCmd(&_cmd_entry[loop]))
         {
             printf("\n\r Register Command %s Fail!", _cmd_entry[loop].cmd_name);
-            return FALSE;
         }
     }
-
-    return TRUE;
 }
 
 

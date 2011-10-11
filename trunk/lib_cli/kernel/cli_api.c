@@ -26,7 +26,7 @@
 #include "cli_api.h"
 
 
-static const SINT8 *p_cli_version = CLI_VERSION;
+static const UINT8 *p_cli_version = CLI_VERSION;
 
 /******************************************************************************
  * FUNCTION NAME:
@@ -42,7 +42,7 @@ static const SINT8 *p_cli_version = CLI_VERSION;
  * HISTORY:
  *      2010.4.13        Panda.Xiong         Create/Update
  *****************************************************************************/
-const SINT8 *CLI_GetVersion(void)
+const UINT8 *CLI_GetVersion(void)
 {
     return p_cli_version;
 }

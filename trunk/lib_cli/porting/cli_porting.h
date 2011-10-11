@@ -42,8 +42,7 @@
 /* CLI max command length */
 #define CLI_MAX_CMD_LEN         (1024)
 
-/* CLI max parameters in one command,
- * shouldn't larger than 255 */
+/* CLI max parameters in one command */
 #define CLI_MAX_PARAM		    (32)
 
 /* screen width of standard VT100 is 80 */

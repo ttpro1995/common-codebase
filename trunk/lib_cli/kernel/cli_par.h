@@ -31,7 +31,7 @@
  * FUNCTION NAME:
  *      CLI_PAR_ParseCmd
  * DESCRIPTION:
- *      Parse command.
+ *      Parse CLI command.
  * INPUT:
  *      ptr   : The input command to be parsed.
  * OUTPUT:
@@ -44,13 +44,13 @@
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-UINT32 CLI_PAR_ParseCmd(IN OUT SINT8 *ptr, OUT SINT8 *param[]);
+CLI_CMD_PARAM_T CLI_PAR_ParseCmd(IN OUT UINT8 *ptr, OUT UINT8 *param[]);
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_PAR_Init
  * DESCRIPTION:
- *      None
+ *      CLI parse init.
  * INPUT:
  *      None
  * OUTPUT:
@@ -62,7 +62,7 @@ UINT32 CLI_PAR_ParseCmd(IN OUT SINT8 *ptr, OUT SINT8 *param[]);
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-BOOL CLI_PAR_Init(void);
+#define CLI_PAR_Init()      /* do nothing */
 
 
 #endif /* __CLI_PAR_H */

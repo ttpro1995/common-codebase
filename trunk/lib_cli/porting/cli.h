@@ -27,6 +27,9 @@
 #define __CLI_H
 
 
+#include "cli_porting.h"
+
+
 /* User command should return these values */
 typedef enum
 {
@@ -36,19 +39,26 @@ typedef enum
     CLI_PRT_FAIL    = 3   /* the cli will print fail         */
 } CLI_REG_CMD_RETURN_T;
 
+#if   (CLI_MAX_PARAM < 256)
+ typedef UINT8  CLI_CMD_PARAM_T;
+#elif (CLI_MAX_PARAM < 65536)
+ typedef UINT16 CLI_CMD_PARAM_T;
+#else
+ typedef UINT32 CLI_CMD_PARAM_T;
+#endif
 
 typedef CLI_REG_CMD_RETURN_T (*CLI_REG_CMD_EXEC_T)
 (
-    IN const UINT32  n_param,
-    IN const SINT8  *param[]
+    IN const CLI_CMD_PARAM_T  n_param,
+    IN const UINT8           *param[]
 );
 
 /* register command stucture format */
 typedef struct _cli_reg_cmd_t
 {
-    const SINT8           *cmd_name;       /* command name                */
+    const UINT8           *cmd_name;       /* command name                */
     CLI_REG_CMD_EXEC_T     cmd_exec;       /* execute command function    */
-    const SINT8           *cmd_help;       /* command help                */
+    const UINT8           *cmd_help;       /* command help                */
 
     struct _cli_reg_cmd_t *prev_cmd;       /* the prev command            */
     struct _cli_reg_cmd_t *next_cmd;       /* the next command            */
@@ -69,7 +79,7 @@ typedef struct _cli_reg_cmd_t
  * HISTORY:
  *      2010.4.13        Panda.Xiong         Create/Update
  *****************************************************************************/
-const SINT8 *CLI_GetVersion(void);
+const UINT8 *CLI_GetVersion(void);
 
 /******************************************************************************
  * FUNCTION NAME:

@@ -43,9 +43,9 @@
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-UINT32 CLI_PAR_ParseCmd(IN OUT SINT8 *ptr, OUT SINT8 *param[])
+CLI_CMD_PARAM_T CLI_PAR_ParseCmd(IN OUT UINT8 *ptr, OUT UINT8 *param[])
 {
-	UINT32	n = 0;
+	CLI_CMD_PARAM_T	n = 0;
 
 	if (ptr == NULL)
 	{
@@ -81,27 +81,5 @@ UINT32 CLI_PAR_ParseCmd(IN OUT SINT8 *ptr, OUT SINT8 *param[])
 	}
 
 	return n;
-}
-
-
-/******************************************************************************
- * FUNCTION NAME:
- *      None
- * DESCRIPTION:
- *      None
- * INPUT:
- *      None
- * OUTPUT:
- *      None
- * RETURN:
- *      None
- * NOTES:
- *      None
- * HISTORY:
- *      Ver1.00     2007.02.14      Panda Xiong         Create
-******************************************************************************/
-BOOL CLI_PAR_Init(void)
-{
-	return TRUE;
 }
 

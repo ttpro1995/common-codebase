@@ -34,10 +34,10 @@ static CLI_REG_CMD_T *p_cmd_end;
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      cli_reg_IsCmdRegistered
  * DESCRIPTION:
- *      check this command has been registed or not.
- *      if registerd, return TRUE; else, return FALSE.
+ *      check this command has been registered or not.
+ *      if registered, return TRUE; else, return FALSE.
  * INPUT:
  *      None
  * OUTPUT:
@@ -49,7 +49,7 @@ static CLI_REG_CMD_T *p_cmd_end;
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-BOOL CLI_REG_IsCmdRegisterd(IN const CLI_REG_CMD_T *cmd)
+static BOOL cli_reg_IsCmdRegistered(IN const CLI_REG_CMD_T *cmd)
 {
     CLI_REG_CMD_T *cmd_loop;
 
@@ -108,13 +108,13 @@ BOOL CLI_REG_RegisterCmd(IN CLI_REG_CMD_T *cmd)
     }
     else
     {
-        /* first, we should check this command has been registerd or not. */
-        if (CLI_REG_IsCmdRegisterd(cmd))
+        /* first, we should check this command has been registered or not */
+        if (cli_reg_IsCmdRegistered(cmd))
         {
             return TRUE;
         }
 
-        /* this is a new command, register it. */
+        /* this is a new command, register it */
         cmd->prev_cmd       = p_cmd_end;
         p_cmd_end->next_cmd = cmd;
         p_cmd_end           = p_cmd_end->next_cmd;
@@ -211,7 +211,7 @@ BOOL CLI_REG_DeRegisterCmd(IN CLI_REG_CMD_T *cmd)
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-const CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const SINT8 *cmd)
+const CLI_REG_CMD_T *CLI_REG_SearchCommand(IN const UINT8 *cmd)
 {
     const CLI_REG_CMD_T *cmd_loop;
 
@@ -323,11 +323,11 @@ const CLI_REG_CMD_T *CLI_REG_GetPrevCommand(IN const CLI_REG_CMD_T *cmd)
 const CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
 (
     IN const CLI_REG_CMD_T *cmd,
-    IN const SINT8         *match_str
+    IN const UINT8         *match_str
 )
 {
     const CLI_REG_CMD_T *cmd_loop;
-    UINT32               match_cmd_len;
+    CLI_CMD_LEN_T        match_cmd_len;
 
     if (match_str == NULL)
     {
@@ -381,7 +381,7 @@ const CLI_REG_CMD_T *CLI_REG_GetNextMatchCommand
 ******************************************************************************/
 UINT32 CLI_REG_GetMatchCommandInfo
 (
-    IN const SINT8  *match_str,
+    IN const UINT8  *match_str,
     OUT      UINT8  *least_matched_str
 )
 {
@@ -389,8 +389,8 @@ UINT32 CLI_REG_GetMatchCommandInfo
     UINT32               count;
 
     const CLI_REG_CMD_T *last_matched_cmd;
-    UINT32               least_matched_len;
-    UINT32               loop;
+    CLI_CMD_LEN_T        least_matched_len;
+    CLI_CMD_LEN_T        loop;
 
     if ((match_str == NULL) || (least_matched_str == NULL))
     {
@@ -445,9 +445,9 @@ UINT32 CLI_REG_GetMatchCommandInfo
 
 /******************************************************************************
  * FUNCTION NAME:
- *      None
+ *      CLI_REG_Init
  * DESCRIPTION:
- *      None
+ *      CLI Register Init.
  * INPUT:
  *      None
  * OUTPUT:
@@ -459,9 +459,8 @@ UINT32 CLI_REG_GetMatchCommandInfo
  * HISTORY:
  *      Ver1.00     2007.02.14      Panda Xiong         Create
 ******************************************************************************/
-BOOL CLI_REG_Init(void)
+void CLI_REG_Init(void)
 {
 	p_cmd_end = NULL;
-	return TRUE;
 }
 
