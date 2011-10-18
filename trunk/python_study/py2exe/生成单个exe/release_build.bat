@@ -5,7 +5,7 @@
 :: ===========================================================================
 
 :: Define python install directory
-set PYTHON_DIR=D:\compiler\python
+set PYTHON_DIR=%COMPILER_BASE%\python
 
 :: Define python entry file name at here
 set ENTRY_FILE=main.py
