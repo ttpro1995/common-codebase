@@ -25,9 +25,6 @@
 
 @echo off
 
-:: set compiler base path
-set COMPILER_BASE=D:\compiler
-
 :: add base tools & project compiler search path
 path %COMPILER_BASE%\bin;%COMPILER_BASE%\arm-uclibc\bin
 

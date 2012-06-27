@@ -132,10 +132,10 @@ OSTickISR:
      *
      * note: the lr register of previous cpu mode is still not saved yet,
      *        we do not saved it here, because in IRQ mode, the lr register
-     *        of previous cpu mode and IRQ mode is two physical different,
-     *        thus, we only need to save it while OSIntCtxSw() executing.
-     *        if no need to switch context, the lr register of previous cpu
-     *        mode is also no need to save.
+     *        of previous cpu mode and IRQ mode are two different physical
+     *        registers, thus, we only need to save it while OSIntCtxSw()
+     *        executing. if no need to switch context, the lr register of
+     *        previous cpu mode is also no need to save.
      */
     sub     lr, lr, #4
     stmfd   sp!, {r0-r12, lr}
@@ -151,7 +151,7 @@ OSTickISR:
     bl      OSTimeTick
     bl      OSIntExit
 
-    /* no higher priority task is been scheduled */
+    /* no higher priority task is scheduled */
     ldmfd   sp!, {r5}
     msr     spsr, r5
     ldmfd   sp!, {r0-r12, pc}^  /* note: use ^ to prevent interrupt */
