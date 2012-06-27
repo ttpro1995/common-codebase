@@ -30,7 +30,7 @@
 
 /* declare stack space.
  *
- * here, use __attribute__ to make sure the stack is been aligned to 8Byte.
+ * here, use __attribute__ to make sure the stack is aligned to 8Byte.
  *
  * Add additional 8Byte, to make sure the stacking is FD(full-decrease) mode,
  *  to follow the APCS(ARM Procedure Call Standard).
