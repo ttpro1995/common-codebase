@@ -61,7 +61,7 @@ OS_STK *OSTaskStkInit(void (*task)(void *pd), void *pdata, OS_STK *ptos, INT16U 
     stk    = ptos;            /* Load stack pointer                 */
 
     /* build a context for the new task */
-    *--stk = (OS_STK)task;              /* lr   */
+    *--stk = (OS_STK)task;              /* pc, task entry, will be directly transferd to PC register */
     *--stk = 0;                         /* r12  */
     *--stk = 0;                         /* r11  */
     *--stk = 0;                         /* r10  */
@@ -74,9 +74,9 @@ OS_STK *OSTaskStkInit(void (*task)(void *pd), void *pdata, OS_STK *ptos, INT16U 
     *--stk = 0;                         /* r3   */
     *--stk = 0;                         /* r2   */
     *--stk = 0;                         /* r1   */
-    *--stk = (OS_STK)pdata;             /* r0   */
-    *--stk = SVC_MODE;                  /* cpsr */
-    *--stk = (OS_STK)task;              /* lr   */
+    *--stk = (OS_STK)pdata;             /* r0, the first parameter, to follow APCS */
+    *--stk = SVC_MODE;                  /* cpsr, can set to USR mode, to force all tasks are running at USR mode */
+    *--stk = (OS_STK)task;              /* lr, return address of this task, can be initialized to other procedure to handle the stuffs after task exiting */
 
     return stk;
 }
