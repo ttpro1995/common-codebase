@@ -48,18 +48,23 @@ OSIntCtxSw:
     /* 1. switch back to previous cpu mode with IRQ disabled,
      *     this cpu mode is exactly the lower priority task's cpu mode.
      *
-     * note: here, we must disable IRQ, to prevent further IRQ interrupt,
+     * note:
+     *    a) here, we must disable IRQ, to prevent further IRQ interrupt,
      *       because we are not ready to deal this IRQ interrupt yet.
+     *    b) if all task are configured to running at usr mode,
+     *       here, we can only switch back to sys mode,
+     *       else, we can't doing a real context switch,
+     *       because the cpsr/spsr can't be modified/accessed at usr mode.
      */
     mrs     r12, spsr               /* load spsr_irq value               */
     orr     r12, r12, #(IRQ_BIT)    /* disable IRQ interrupt             */
     msr     cpsr, r12               /* switch to previous cpu mode       */
 
     /* 2. copy context from IRQ's stack into the lower priority task's stack */
-    sub     r1, sp, #(IRQ_SAVED_CONTEXT_SIZE)
+    sub     r1, sp, #(IRQ_SAVED_CONTEXT_SIZE)   /* reserve 15 registers space in previous cpu mode, to save the IRQ's stack */
 _OSIntCtxSw_loop:
-    ldr     r3, [r0, #-4]!
-    str     r3, [sp, #-4]!
+    ldr     r3, [r0, #-4]!          /* copied from IRQ's stack */
+    str     r3, [sp, #-4]!          /* stored into the reserved stack in previous cpu mode */
     cmp     sp, r1
     bne     _OSIntCtxSw_loop
 
@@ -82,12 +87,14 @@ OSCtxSw:
      */
     stmfd   sp!, {lr}
 
-    /* save current task stack pointer */
+    /* save current task stack pointer:
+     *  *OSTCBCur = sp
+     */
     ldr     r5, =OSTCBCur           /* load the current task's TCB       */
     ldr     r5, [r5]                /* get TCB pointer                   */
     str     sp, [r5]                /* save current task stack pointer   */
 
-    /* OsTCBCur = OsTCBHightRdy */
+    /* OSTCBCur = OSTCBHighRdy */
     ldr     r6, =OSTCBHighRdy       /* load the highest ready task's TCB */
     ldr     r6, [r6]                /* get TCB pointer                   */
     ldr     r5, =OSTCBCur           /* load the current task's TCB       */
@@ -106,15 +113,18 @@ OSCtxSw:
 /* start the highest ready task, called from OSStart() */
 .global OSStartHighRdy
 OSStartHighRdy:
+    /* OSRunning = TRUE */
     ldr     r5, =OSRunning
     mov     r6, #1
     strb    r6, [r5]                /* set os running flag               */
 
 OSCtxSw2:
-    /* load the highest priority task stack pointer */
-    ldr     r5, =OSTCBHighRdy       /* point to highest TCB              */
+    /* load the highest priority task stack pointer:
+     *  sp = *OSTCBCur
+     */
+    ldr     r5, =OSTCBCur           /* point to current TCB              */
     ldr     r5, [r5]                /* get stack pointer                 */
-    ldr     sp, [r5]                /* save highest task stack pointer   */
+    ldr     sp, [r5]                /* save current task stack pointer   */
 
     ldmfd   sp!, {lr}
     ldmfd   sp!, {r5}
