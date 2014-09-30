@@ -23,7 +23,7 @@ namespace RegAnalyzer
         {
             InitializeComponent();
             
-            // hook click event handler
+            // hook text click event handler
             Label[] txtBits = {txtBit0,  txtBit1,  txtBit2,  txtBit3,  txtBit4,  txtBit5,  txtBit6 , txtBit7,  txtBit8,  txtBit9, 
                                txtBit10, txtBit11, txtBit12, txtBit13, txtBit14, txtBit15, txtBit16, txtBit17, txtBit18, txtBit19,
                                txtBit20, txtBit21, txtBit22, txtBit23, txtBit24, txtBit25, txtBit26, txtBit27, txtBit28, txtBit29,
@@ -31,6 +31,16 @@ namespace RegAnalyzer
 			foreach (Label tb in txtBits)
 			{
 				tb.Click += new System.EventHandler(this.txtBit_Click);
+			}
+			
+			// hook label click event handler
+            Label[] lblTexts = {lblText0,  lblText1,  lblText2,  lblText3,  lblText4,  lblText5,  lblText6 , lblText7,  lblText8,  lblText9, 
+                               lblText10, lblText11, lblText12, lblText13, lblText14, lblText15, lblText16, lblText17, lblText18, lblText19,
+                               lblText20, lblText21, lblText22, lblText23, lblText24, lblText25, lblText26, lblText27, lblText28, lblText29,
+                               lblText30, lblText31};
+			foreach (Label tb in lblTexts)
+			{
+				tb.Click += new System.EventHandler(this.lblText_Click);
 			}
         }
 
@@ -63,6 +73,36 @@ namespace RegAnalyzer
             }
         }
 
+        /// <summary>
+        /// Label Text Click Handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lblText_Click(object sender, EventArgs e)
+        {
+            Label[] lblTexts = {lblText0,  lblText1,  lblText2,  lblText3,  lblText4,  lblText5,  lblText6 , lblText7,  lblText8,  lblText9, 
+                               lblText10, lblText11, lblText12, lblText13, lblText14, lblText15, lblText16, lblText17, lblText18, lblText19,
+                               lblText20, lblText21, lblText22, lblText23, lblText24, lblText25, lblText26, lblText27, lblText28, lblText29,
+                               lblText30, lblText31};
+            
+            if (lblText15.Text == "15")
+            {
+                // dec -> hex
+    			foreach (Label tb in lblTexts)
+    			{
+    			    tb.Text = Convert.ToString(Convert.ToByte(tb.Text,10), 16).ToUpper();
+    			}
+            }
+            else
+            {
+                // hex -> dec
+    			foreach (Label tb in lblTexts)
+    			{
+    			    tb.Text = Convert.ToString(Convert.ToByte(tb.Text,16), 10);
+    			}
+            }
+        }
+        
         /// <summary>
         /// Bit Click Handler
         /// </summary>
